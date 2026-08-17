@@ -1,76 +1,90 @@
-local SceneManager = {currentScene = nil, sceneFactories = {}}
+local SceneManager = {}
+local currentScene = nil 
+local sceneFactories = {}
 
-function SceneManager.register(name, factory)
-    SceneManager.sceneFactories[name] = factory
+local frameEvents = {
+    "keyPressed"
+}
+
+local function clearFrameEvents(scene)
+    local registry = scene.registry
+
+    for _, eventName in ipairs(frameEvents) do
+        for _, entity in ipairs(registry:query(eventName)) do
+            registry:destroy(entity)
+        end
+    end
 end
 
-function SceneManager.change(name)
-    local factory = SceneManager.sceneFactories[name]
+function SceneManager.register(name, factory)
+    sceneFactories[name] = factory
+end
+
+function SceneManager.current()
+    return currentScene
+end
+
+function SceneManager.change(name, payload)
+    local factory = sceneFactories[name]
 
     if not factory then
         -- Debug
-        print(
-            "Error: no existe una escena registrada con el nombre: "
-            .. tostring(name)
-        )
+        print("Error: no existe una escena registrada con el nombre: " .. tostring(name))
         return
     end
 
     -- Descargar la escena anterior
-    if SceneManager.currentScene then
-        SceneManager.currentScene:unload()
+    if currentScene then
+        currentScene:unload()
     end
 
     -- Crear la nueva escena
-    SceneManager.currentScene = factory()
+    currentScene = factory(payload)
 
     -- Ejecutar su setup
-    SceneManager.currentScene:setup()
+    currentScene:setup()
 
-    print(
-        "Escena actual: "
-        .. SceneManager.currentScene.name
-    )
+    print("Escena actual: " .. currentScene.name)
 end
 
 function SceneManager.update(dt)
-    local scene = SceneManager.currentScene
+    local scene = currentScene
 
     if not scene then
         return
     end
 
     scene:update(dt)
+    clearFrameEvents(scene)
 
-    local requestEntity, request = scene.registry:first("sceneChangeRequest")
+    local _, request = scene.registry:first("sceneChangeRequest")
 
     if not request then
         return
     end
 
     local target = request.target
+    local payload = request.payload
 
-    for _, entity in ipairs(
-        scene.registry:query("sceneChangeRequest")
-    ) do
+    for _, entity in ipairs(scene.registry:query("sceneChangeRequest")) do
         scene.registry:destroy(entity)
     end
 
-    SceneManager.change(target)
+    SceneManager.change(target, payload)
 end
 
 function SceneManager.draw()
-    if SceneManager.currentScene then
-        SceneManager.currentScene:draw()
+    if currentScene then
+        currentScene:draw()
     end
 end
 
 function SceneManager.keypressed(key)
-    if not SceneManager.currentScene then
+    if not currentScene then
         return
     end
 
-    SceneManager.currentScene.registry:spawn({
+    currentScene.registry:spawn({
         keyPressed = {
             key = key
         }
@@ -78,9 +92,9 @@ function SceneManager.keypressed(key)
 end
 
 function SceneManager.unload()
-    if SceneManager.currentScene then
-        SceneManager.currentScene:unload()
-        SceneManager.currentScene = nil
+    if currentScene then
+        currentScene:unload()
+        currentScene = nil
     end
 end
 

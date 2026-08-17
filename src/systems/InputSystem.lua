@@ -331,20 +331,11 @@ end
 
 function InputSystem.update(scene, dt)
     local registry = scene.registry
-
-    local activeCanvas =
-        Canvas.getActiveInteractive(
-            registry
-        )
-
+    local activeCanvas = Canvas.getActiveInteractive(registry)
     local events = registry:query("keyPressed")
 
     for _, eventEntity in ipairs(events) do
-        local keyPressed =
-            registry:get(
-                eventEntity,
-                "keyPressed"
-            )
+        local keyPressed = registry:get(eventEntity, "keyPressed")
 
         if keyPressed then
             processKeyPressed(
@@ -353,8 +344,6 @@ function InputSystem.update(scene, dt)
                 keyPressed.key
             )
         end
-
-        registry:destroy(eventEntity)
     end
 end
 
