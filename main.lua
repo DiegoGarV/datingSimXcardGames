@@ -17,7 +17,7 @@ function love.load(args)
     attachDebugOverlay(SceneManager)
 
     if args and args[1] == "--debug" then
-        DebugOverlay.toggle()
+        DebugOverlay.enterEditor()
     end
 end
 

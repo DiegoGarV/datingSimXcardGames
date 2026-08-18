@@ -4,7 +4,8 @@ local SceneManager = require("src.ecs.SceneManager")
 
 local DebugOverlay = {}
 
-local visible = false
+local editorMode = false
+local toolsVisible = false
 local paused = false
 local stepOnce = false
 
@@ -16,6 +17,14 @@ local gameCanvas = nil
 local fontInstalled = false
 local headingFont = nil
 local labelFont = nil
+
+local viewport = {
+    x = 0,
+    y = 0,
+    width = GameConfig.width,
+    height = GameConfig.height,
+    scale = 1
+}
 
 local TOP_BAR_HEIGHT = 28
 local LEFT_PANEL_WIDTH = 270
@@ -92,6 +101,11 @@ local function updateLayout()
         h = GameConfig.height
     }
 
+    viewport.x = layout.game.x
+    viewport.y = layout.game.y
+    viewport.width = GameConfig.width * viewport.scale
+    viewport.height = GameConfig.height * viewport.scale
+
     layout.right = {
         x = MARGIN + LEFT_PANEL_WIDTH + GAP + GameConfig.width + GAP,
         y = MARGIN + TOP_BAR_HEIGHT + GAP,
@@ -130,7 +144,7 @@ local function fieldSpacing()
 end
 
 local function applyWindowMode()
-    if visible then
+    if editorMode then
         love.window.setMode(DEBUG_WINDOW_WIDTH, DEBUG_WINDOW_HEIGHT)
     else
         love.window.setMode(GameConfig.width, GameConfig.height)
@@ -424,36 +438,50 @@ local function buildBottomPanel(scene)
 end
 
 local function drawGameFrame()
-    local game = layout.game
-
     love.graphics.setColor(0.10, 0.10, 0.11, 1)
     -- love.graphics.setColor(0.35, 0.05, 0.05, 1)
     love.graphics.rectangle("fill", 0, 0, DEBUG_WINDOW_WIDTH, DEBUG_WINDOW_HEIGHT)
 
     love.graphics.setColor(0.08, 0.08, 0.09, 1)
-    love.graphics.rectangle("fill", game.x - 3, game.y - 3, game.w + 6, game.h + 6)
+    love.graphics.rectangle("fill", viewport.x - 3, viewport.y - 3, viewport.width + 6, viewport.height + 6)
 
     love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.draw(gameCanvas, game.x, game.y)
+    love.graphics.draw(gameCanvas, viewport.x, viewport.y, 0, viewport.scale, viewport.scale)
 
     love.graphics.setColor(0.75, 0.75, 0.78, 1)
     love.graphics.setLineWidth(2)
-    love.graphics.rectangle("line", game.x - 1, game.y - 1, game.w + 2, game.h + 2)
+    love.graphics.rectangle("line", viewport.x - 1, viewport.y - 1, viewport.width + 2, viewport.height + 2)
 
     love.graphics.setLineWidth(1)
     love.graphics.setColor(1, 1, 1, 1)
 end
 
-function DebugOverlay.toggle()
-    visible = not visible
-
-    if not visible then
-        paused = false
-        stepOnce = false
+function DebugOverlay.enterEditor()
+    if editorMode then
+        return
     end
+
+    editorMode = true
+    toolsVisible = true
 
     applyWindowMode()
     updateLayout()
+end
+
+function DebugOverlay.toggleTools()
+    if not editorMode then
+        return
+    end
+
+    toolsVisible = not toolsVisible
+end
+
+function DebugOverlay.isEditorMode()
+    return editorMode
+end
+
+function DebugOverlay.areToolsVisible()
+    return toolsVisible
 end
 
 function DebugOverlay.isVisible()
@@ -461,13 +489,18 @@ function DebugOverlay.isVisible()
 end
 
 function DebugOverlay.beginFrame(scene)
-    if not visible then
+    if not editorMode then
+        return
+    end
+
+    ensureCanvas()
+    updateLayout()
+
+    if not toolsVisible then
         return
     end
 
     installFont()
-    ensureCanvas()
-    updateLayout()
     imlove.NewFrame()
 
     if scene ~= inspectedScene then
@@ -487,7 +520,7 @@ function DebugOverlay.beginFrame(scene)
 end
 
 function DebugOverlay.shouldUpdate()
-    if not visible or not paused then
+    if not editorMode or not paused then
         return true
     end
 
@@ -500,7 +533,7 @@ function DebugOverlay.shouldUpdate()
 end
 
 function DebugOverlay.draw(gameDraw)
-    if not visible then
+    if not editorMode then
         gameDraw()
         return
     end
@@ -514,25 +547,27 @@ function DebugOverlay.draw(gameDraw)
     love.graphics.setCanvas()
 
     drawGameFrame()
-    imlove.Render()
+    if toolsVisible then
+        imlove.Render()
+    end
 end
 
 function DebugOverlay.keypressed(key)
-    if key == "f1" then
-        DebugOverlay.toggle()
-        return true
-    end
-
-    if not visible then
+    if not editorMode then
         return false
     end
 
-    if key == "f9" and visible then
+    if key == "f1" then
+        DebugOverlay.toggleTools()
+        return true
+    end
+
+    if key == "f9" then
         paused = not paused
         return true
     end
 
-    if key == "f10" and visible then
+    if key == "f10" then
         if paused then
             stepOnce = true
         end
@@ -540,11 +575,15 @@ function DebugOverlay.keypressed(key)
         return true
     end
 
+    if not toolsVisible then
+        return false
+    end
+
     return imlove.keypressed(key)
 end
 
 function DebugOverlay.textinput(text)
-    if not visible then
+    if not editorMode or not toolsVisible then
         return false
     end
 
@@ -552,7 +591,7 @@ function DebugOverlay.textinput(text)
 end
 
 function DebugOverlay.mousepressed(x, y, button)
-    if not visible then
+    if not editorMode or not toolsVisible then
         return false
     end
 
@@ -560,18 +599,58 @@ function DebugOverlay.mousepressed(x, y, button)
 end
 
 function DebugOverlay.mousereleased(x, y, button)
-    if not visible then
+    if not editorMode or not toolsVisible then
         return false
     end
     return imlove.mousereleased(x, y, button)
 end
 
 function DebugOverlay.wheelmoved(dx, dy)
-    if not visible then
+    if not editorMode or not toolsVisible then
         return false
     end
 
     return imlove.wheelmoved(dx, dy)
+end
+
+function DebugOverlay.getViewport()
+    return viewport
+end
+
+function DebugOverlay.setViewportScale(scale)
+    viewport.scale = scale
+    updateLayout()
+end
+
+function DebugOverlay.screenToGame(x, y)
+    if not editorMode then
+        return x, y
+    end
+
+    local localX = x - viewport.x
+    local localY = y - viewport.y
+
+    if localX < 0
+        or localY < 0
+        or localX > viewport.width
+        or localY > viewport.height then
+        return nil
+    end
+
+    local gameX = localX / viewport.scale
+    local gameY = localY / viewport.scale
+
+    return gameX, gameY
+end
+
+function DebugOverlay.gameToScreen(x, y)
+    if not editorMode then
+        return x, y
+    end
+
+    return
+        viewport.x + x * viewport.scale,
+        viewport.y + y * viewport.scale
 end
 
 return DebugOverlay
