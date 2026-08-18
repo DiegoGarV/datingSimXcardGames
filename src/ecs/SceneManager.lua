@@ -4,7 +4,10 @@ local currentSceneName = nil
 local sceneFactories = {}
 
 local frameEvents = {
-    "keyPressed"
+    "keyPressed",
+    "mousePressed",
+    "mouseReleased",
+    "mouseMoved"
 }
 
 local function clearFrameEvents(scene)
@@ -93,6 +96,54 @@ function SceneManager.keypressed(key)
     currentScene.registry:spawn({
         keyPressed = {
             key = key
+        }
+    })
+end
+
+function SceneManager.mousepressed(x, y, button, istouch, presses)
+    if not currentScene then
+        return
+    end
+
+    currentScene.registry:spawn({
+        mousePressed = {
+            x = x,
+            y = y,
+            button = button,
+            istouch = istouch,
+            presses = presses
+        }
+    })
+end
+
+function SceneManager.mousereleased(x, y, button, istouch, presses)
+    if not currentScene then
+        return
+    end
+
+    currentScene.registry:spawn({
+        mouseReleased = {
+            x = x,
+            y = y,
+            button = button,
+            istouch = istouch,
+            presses = presses
+        }
+    })
+end
+
+function SceneManager.mousemoved(x, y, dx, dy, istouch)
+    if not currentScene then
+        return
+    end
+
+    currentScene.registry:spawn({
+        mouseMoved = {
+            x = x,
+            y = y,
+            dx = dx,
+            dy = dy,
+            istouch = istouch
         }
     })
 end

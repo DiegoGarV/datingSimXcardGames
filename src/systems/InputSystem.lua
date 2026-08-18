@@ -56,10 +56,7 @@ local function getCanvasButtons(
     return buttons
 end
 
-local function findSelectedButton(
-    buttons,
-    selectedIndex
-)
+local function findSelectedButton(buttons, selectedIndex)
     for _, entry in ipairs(buttons) do
         if entry.button.index == selectedIndex then
             return entry
@@ -69,10 +66,26 @@ local function findSelectedButton(
     return nil
 end
 
-local function getDirection(
-    navigation,
-    key
-)
+local function findButtonAtPosition(buttons, x, y)
+    for _, entry in ipairs(buttons) do
+        local position = entry.position
+        local rectangle = entry.rectangle
+
+        local inside =
+            x >= position.x
+            and x <= position.x + rectangle.width
+            and y >= position.y
+            and y <= position.y + rectangle.height
+
+        if inside then
+            return entry
+        end
+    end
+
+    return nil
+end
+
+local function getDirection(navigation, key)
     if navigation == "vertical" or navigation == "grid" then
         if key == "up" or key == "w" then
             return 0, -1
@@ -167,10 +180,7 @@ local function findWrappedButton(
     return best
 end
 
-local function ensureValidSelection(
-    registry,
-    canvas
-)
+local function ensureValidSelection(registry, canvas)
     local buttons =
         getCanvasButtons(
             registry,
@@ -196,11 +206,7 @@ local function ensureValidSelection(
     return buttons[1]
 end
 
-local function moveCanvasSelection(
-    registry,
-    canvas,
-    key
-)
+local function moveCanvasSelection(registry, canvas, key)
     local directionX, directionY =
         getDirection(
             canvas.navigation,
@@ -268,35 +274,35 @@ local function moveCanvasSelection(
     end
 end
 
-local function activateSelectedButton(
-    registry,
-    canvas
-)
+local function activateButton(registry, entry)
+    if not entry then
+        return
+    end
+
+    registry:spawn({
+        buttonPressed = {
+            buttonEntity = entry.entity,
+            canvasId = entry.uiElement.canvasId,
+            action = entry.button.action,
+            index = entry.button.index
+        }
+    })
+end
+
+local function activateSelectedButton(registry, canvas)
     local selected =
         ensureValidSelection(
             registry,
             canvas
         )
 
-    if not selected then
-        return
-    end
-
-    registry:spawn({
-        buttonPressed = {
-            buttonEntity = selected.entity,
-            canvasId = selected.uiElement.canvasId,
-            action = selected.button.action,
-            index = selected.button.index
-        }
-    })
+    activateButton(
+        registry,
+        selected
+    )
 end
 
-local function processKeyPressed(
-    registry,
-    canvas,
-    key
-)
+local function processKeyPressed(registry, canvas, key)
     if not canvas then
         return
     end
@@ -316,6 +322,82 @@ local function processKeyPressed(
     )
 end
 
+local function processMousePressed(
+    registry,
+    canvas,
+    input, 
+    event
+)
+    input.mouse.x = event.x
+    input.mouse.y = event.y
+    input.mouse.buttons[event.button] = true
+
+    if not canvas or event.button ~= 1 then
+        return
+    end
+
+    local buttons = getCanvasButtons(
+        registry,
+        canvas.id
+    )
+
+    local clicked = findButtonAtPosition(
+        buttons,
+        event.x,
+        event.y
+    )
+
+    if not clicked then
+        return
+    end
+
+    canvas.selectedIndex = clicked.button.index
+
+    activateButton(
+        registry,
+        clicked
+    )
+end
+
+local function processMouseReleased(input, event)
+    input.mouse.x = event.x
+    input.mouse.y = event.y
+    input.mouse.buttons[event.button] = false
+end
+
+local function processMouseMoved(
+    registry,
+    canvas,
+    input,
+    event
+)
+    input.mouse.x = event.x
+    input.mouse.y = event.y
+    input.mouse.dx = input.mouse.dx + event.dx
+    input.mouse.dy = input.mouse.dy + event.dy
+
+    if not canvas then
+        return
+    end
+
+    canvas.selectedIndex = nil
+
+    local buttons = getCanvasButtons(
+        registry,
+        canvas.id
+    )
+
+    local hovered = findButtonAtPosition(
+        buttons,
+        event.x,
+        event.y
+    )
+
+    if hovered then
+        canvas.selectedIndex = hovered.button.index
+    end
+end
+
 function InputSystem.setup(scene)
     local registry = scene.registry
 
@@ -326,16 +408,33 @@ function InputSystem.setup(scene)
     end
 
     registry:spawn({
-        input = {}
+        input = {
+            mouse = {
+                x = 0,
+                y = 0,
+
+                dx = 0,
+                dy = 0,
+
+                buttons = {}
+            }
+        }
     })
 end
 
 function InputSystem.update(scene, dt)
     local registry = scene.registry
     local activeCanvas = Canvas.getActiveInteractive(registry)
-    local events = registry:query("keyPressed")
+    local _, input = registry:first("input")
 
-    for _, eventEntity in ipairs(events) do
+    if not input then
+        return
+    end
+
+    input.mouse.dx = 0
+    input.mouse.dy = 0
+
+    for _, eventEntity in ipairs(registry:query("keyPressed")) do
         local keyPressed = registry:get(eventEntity, "keyPressed")
 
         if keyPressed then
@@ -343,6 +442,43 @@ function InputSystem.update(scene, dt)
                 registry,
                 activeCanvas,
                 keyPressed.key
+            )
+        end
+    end
+
+    for _, eventEntity in ipairs(registry:query("mousePressed")) do
+        local mousePressed = registry:get(eventEntity, "mousePressed")
+
+        if mousePressed then
+            processMousePressed(
+                registry,
+                activeCanvas,
+                input,
+                mousePressed
+            )
+        end
+    end
+
+    for _, eventEntity in ipairs(registry:query("mouseReleased")) do
+        local mouseReleased = registry:get(eventEntity, "mouseReleased")
+
+        if mouseReleased then
+            processMouseReleased(
+                input,
+                mouseReleased
+            )
+        end
+    end
+
+    for _, eventEntity in ipairs(registry:query("mouseMoved")) do
+        local mouseMoved = registry:get(eventEntity, "mouseMoved")
+
+        if mouseMoved then
+            processMouseMoved(
+                registry,
+                activeCanvas,
+                input,
+                mouseMoved
             )
         end
     end

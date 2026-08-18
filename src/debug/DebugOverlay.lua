@@ -653,4 +653,8 @@ function DebugOverlay.gameToScreen(x, y)
         viewport.y + y * viewport.scale
 end
 
+function DebugOverlay.isPaused()
+    return editorMode and paused
+end
+
 return DebugOverlay

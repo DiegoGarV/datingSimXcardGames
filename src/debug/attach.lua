@@ -1,7 +1,6 @@
 local DebugOverlay = require("src.debug.DebugOverlay")
 
 local UI_EVENTS = {
-    "keypressed",
     "textinput",
     "wheelmoved"
 }
@@ -37,10 +36,30 @@ return function(sceneManager)
         end
     end
 
+    local keypressed = love.keypressed
+
+    love.keypressed = function(key, scancode, isrepeat)
+        if DebugOverlay.keypressed(key) then
+            return
+        end
+
+        if DebugOverlay.isPaused() then
+            return
+        end
+
+        if keypressed then
+            keypressed(key, scancode, isrepeat)
+        end
+    end
+
     local mousepressed = love.mousepressed
 
     love.mousepressed = function(x, y, button, istouch, presses)
         if DebugOverlay.mousepressed(x, y, button) then
+            return
+        end
+
+        if DebugOverlay.isPaused() then
             return
         end
 
@@ -58,6 +77,10 @@ return function(sceneManager)
             return
         end
 
+        if DebugOverlay.isPaused() then
+            return
+        end
+
         local gameX, gameY = DebugOverlay.screenToGame(x, y)
 
         if gameX and gameY and mousereleased then
@@ -68,6 +91,10 @@ return function(sceneManager)
     local mousemoved = love.mousemoved
 
     love.mousemoved = function(x, y, dx, dy, istouch)
+        if DebugOverlay.isPaused() then
+            return
+        end
+        
         local gameX, gameY = DebugOverlay.screenToGame(x, y)
 
         if not gameX or not gameY then

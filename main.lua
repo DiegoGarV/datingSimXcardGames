@@ -29,6 +29,18 @@ function love.keypressed(key)
     SceneManager.keypressed(key)
 end
 
+function love.mousepressed(x, y, button, istouch, presses)
+    SceneManager.mousepressed(x, y, button, istouch, presses)
+end
+
+function love.mousereleased(x, y, button, istouch, presses)
+    SceneManager.mousereleased(x, y, button, istouch, presses)
+end
+
+function love.mousemoved(x, y, dx, dy, istouch)
+    SceneManager.mousemoved(x, y, dx, dy, istouch)
+end
+
 function love.draw()
     SceneManager.draw()
 end
