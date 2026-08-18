@@ -1,10 +1,13 @@
+local GameConfig = require("src.GameConfig")
 local Canvas = require("src.ui.Canvas")
 
 local MainMenuSetupSystem = {}
 
+MainMenuSetupSystem.name = "MainMenuSetupSystem"
+
 function MainMenuSetupSystem.setup(scene)
     local registry = scene.registry
-    local screenWidth = love.graphics.getWidth()
+    local screenWidth = GameConfig.width
     local buttonWidth = 300
     local buttonHeight = 60
     local buttonSpacing = 20

@@ -39,6 +39,38 @@ function Registry:destroy(entity)
     end
 end
 
+function Registry:entities()
+    local seen = {}
+    local result = {}
+
+    for _, store in pairs(self.components) do
+        for entity in pairs(store) do
+            if not seen[entity] then
+                seen[entity] = true
+                result[#result + 1] = entity
+            end
+        end
+    end
+
+    table.sort(result)
+
+    return result
+end
+
+function Registry:componentsOf(entity)
+    local result = {}
+
+    for name, store in pairs(self.components) do
+        if store[entity] ~= nil then
+            result[#result + 1] = name
+        end
+    end
+
+    table.sort(result)
+
+    return result
+end
+
 function Registry:query(...)
     local names = { ... }
     

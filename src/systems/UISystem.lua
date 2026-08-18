@@ -1,6 +1,9 @@
+local GameConfig = require("src.GameConfig")
 local Canvas = require("src.ui.Canvas")
 
 local UISystem = {}
+
+UISystem.name = "UISystem"
 
 function UISystem.setup(scene)
     local registry = scene.registry
@@ -64,8 +67,8 @@ local function drawCanvasBackground(
         return
     end
 
-    local screenWidth = love.graphics.getWidth()
-    local screenHeight = love.graphics.getHeight()
+    local screenWidth = GameConfig.width
+    local screenHeight = GameConfig.height
 
     love.graphics.setColor(
         0,

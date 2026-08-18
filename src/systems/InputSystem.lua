@@ -2,6 +2,7 @@ local Canvas = require("src.ui.Canvas")
 
 local InputSystem = {}
 
+InputSystem.name = "InputSystem"
 InputSystem.runWhenCanvasBlocked = true
 
 local function getCanvasButtons(

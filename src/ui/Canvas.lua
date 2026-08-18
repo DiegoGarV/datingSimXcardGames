@@ -1,3 +1,5 @@
+local GameConfig = require("src.GameConfig")
+
 local Canvas = {}
 
 function Canvas.create(registry, options)
@@ -40,7 +42,7 @@ function Canvas.createText(registry, options)
             id = options.id,
             value = options.value or "",
             font = options.font or "normal",
-            width = options.width or love.graphics.getWidth(),
+            width = options.width or GameConfig.width,
             align = options.align or "left"
         }
     })

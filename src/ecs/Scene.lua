@@ -11,6 +11,7 @@ function Scene.new(name)
         name = name,
         registry = Registry.new(),
         systems = {},
+        disabledSystems = {},
     }, Scene)
 end
 
@@ -44,7 +45,7 @@ function Scene:update(dt)
     local gameplayBlocked = Canvas.blocksGameplay(self.registry)
 
     for _, system in ipairs(self.systems) do
-        if system.update then
+        if system.update and not self.disabledSystems[system] then
             local canRun = not gameplayBlocked or system.runWhenCanvasBlocked
 
             if canRun then
@@ -56,7 +57,7 @@ end
 
 function Scene:draw()
     for _, system in ipairs(self.systems) do
-        if system.draw then
+        if system.draw and not self.disabledSystems[system] then
             system.draw(self)
         end
     end

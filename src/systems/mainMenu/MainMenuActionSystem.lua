@@ -1,5 +1,7 @@
 local MainMenuActionSystem = {}
 
+MainMenuActionSystem.name = "MainMenuActionSystem"
+
 local function processButtonAction(action)
     if action == "newGame" then
         -- Por ahora no hace nada

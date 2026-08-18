@@ -1,5 +1,6 @@
 local SceneManager = {}
 local currentScene = nil 
+local currentSceneName = nil
 local sceneFactories = {}
 
 local frameEvents = {
@@ -39,6 +40,7 @@ function SceneManager.change(name, payload)
     end
 
     -- Crear la nueva escena
+    currentSceneName = name
     currentScene = factory(payload)
 
     -- Ejecutar su setup
@@ -73,6 +75,10 @@ function SceneManager.update(dt)
     SceneManager.change(target, payload)
 end
 
+function SceneManager.currentName()
+    return currentSceneName
+end
+
 function SceneManager.draw()
     if currentScene then
         currentScene:draw()
@@ -91,10 +97,23 @@ function SceneManager.keypressed(key)
     })
 end
 
+function SceneManager.sceneNames()
+    local names = {}
+
+    for name in pairs(sceneFactories) do
+        names[#names + 1] = name
+    end
+
+    table.sort(names)
+
+    return names
+end
+
 function SceneManager.unload()
     if currentScene then
         currentScene:unload()
         currentScene = nil
+        currentSceneName = nil
     end
 end
 
