@@ -2,9 +2,13 @@ local MainMenuActionSystem = {}
 
 MainMenuActionSystem.name = "MainMenuActionSystem"
 
-local function processButtonAction(action)
+local function processButtonAction(registry, action)
     if action == "newGame" then
-        -- Por ahora no hace nada
+        registry:spawn({
+            sceneChangeRequest = {
+                target = "test"
+            }
+        })
     elseif action == "saveGame" then
         -- Tampoco hace nada aún
     elseif action == "quit" then
@@ -20,7 +24,7 @@ function MainMenuActionSystem.update(scene, dt)
         local buttonPressed = registry:get(eventEntity, "buttonPressed")
 
         if buttonPressed and buttonPressed.canvasId == "mainMenu" then
-            processButtonAction(buttonPressed.action)
+            processButtonAction(registry, buttonPressed.action)
         end
 
         registry:destroy(eventEntity)

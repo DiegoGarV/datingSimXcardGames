@@ -426,8 +426,8 @@ end
 local function drawGameFrame()
     local game = layout.game
 
-    -- love.graphics.setColor(0.10, 0.10, 0.11, 1)
-    love.graphics.setColor(0.35, 0.05, 0.05, 1)
+    love.graphics.setColor(0.10, 0.10, 0.11, 1)
+    -- love.graphics.setColor(0.35, 0.05, 0.05, 1)
     love.graphics.rectangle("fill", 0, 0, DEBUG_WINDOW_WIDTH, DEBUG_WINDOW_HEIGHT)
 
     love.graphics.setColor(0.08, 0.08, 0.09, 1)
