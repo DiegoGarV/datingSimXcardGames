@@ -91,6 +91,44 @@ function Canvas.createButton(registry, options)
     })
 end
 
+function Canvas.createPanel(registry, options)
+    options = options or {}
+
+    return registry:spawn({
+        position = {
+            x = options.x or 0,
+            y = options.y or 0
+        },
+
+        rectangle = {
+            width = options.width or 0,
+            height = options.height or 0
+        },
+
+        color = options.color or {
+            r = 0.2,
+            g = 0.2,
+            b = 0.25
+        },
+
+        outline = {
+            width = options.outlineWidth or 2,
+
+            color = options.outlineColor or {
+                r = 1,
+                g = 1,
+                b = 1
+            }
+        },
+
+        uiElement = {
+            canvasId = options.canvasId
+        },
+
+        panel = {}
+    })
+end
+
 function Canvas.get(registry, canvasId)
     for entity, canvas in
         registry:each("canvas")

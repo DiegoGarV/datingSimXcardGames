@@ -6,10 +6,9 @@ local MainMenuSetupSystem = {}
 
 MainMenuSetupSystem.name = "MainMenuSetupSystem"
 
-local hasSaveFile = SaveFile.exists()
-
 function MainMenuSetupSystem.setup(scene)
     local registry = scene.registry
+    local hasSaveFile = SaveFile.exists()
     local screenWidth = GameConfig.width
     local buttonWidth = 300
     local buttonHeight = 60

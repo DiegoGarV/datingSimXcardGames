@@ -318,12 +318,50 @@ local function drawCanvasButtons(
     end
 end
 
-local function drawCanvas(
-    registry,
-    fonts,
-    canvas
-)
+local function drawCanvasPanels(registry, canvasId)
+    for _,
+        position,
+        rectangle,
+        color,
+        uiElement,
+        panel
+    in
+        registry:each(
+            "position",
+            "rectangle",
+            "color",
+            "uiElement",
+            "panel"
+        )
+    do
+        if uiElement.canvasId == canvasId then
+            love.graphics.setColor(
+                color.r or 1,
+                color.g or 1,
+                color.b or 1,
+                color.a or 1
+            )
+
+            love.graphics.rectangle(
+                "fill",
+                position.x,
+                position.y,
+                rectangle.width,
+                rectangle.height,
+                8,
+                8
+            )
+        end
+    end
+end
+
+local function drawCanvas(registry, fonts, canvas)
     drawCanvasBackground(canvas)
+
+    drawCanvasPanels(
+        registry,
+        canvas.id
+    )
 
     drawCanvasTexts(
         registry,

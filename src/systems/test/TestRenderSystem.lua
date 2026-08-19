@@ -126,6 +126,7 @@ end
 
 function TestRenderSystem.draw(scene)
     local registry = scene.registry
+    local gameState = registry:resource("gameState")
 
     love.graphics.clear(
         0.08,
@@ -146,6 +147,22 @@ function TestRenderSystem.draw(scene)
     )
 
     love.graphics.setLineWidth(1)
+
+    if gameState then
+        love.graphics.setColor(1, 1, 1, 1)
+
+        love.graphics.print(
+            "Level: " .. tostring(gameState.run.level),
+            20,
+            20
+        )
+
+        love.graphics.print(
+            "Seed: " .. tostring(gameState.run.seed),
+            20,
+            45
+        )
+    end
 end
 
 return TestRenderSystem

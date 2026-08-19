@@ -7,6 +7,7 @@ PauseMenuSystem.name = "PauseMenuSystem"
 PauseMenuSystem.runWhenCanvasBlocked = true
 
 local PAUSE_CANVAS_ID = "pauseMenu"
+local SAVE_CONFIRMATION_CANVAS_ID = "saveConfirmation"
 
 local function getPauseCanvas(registry)
     local _, canvas = Canvas.get(
@@ -68,6 +69,20 @@ local function saveGame(registry)
     return true
 end
 
+local function openSaveConfirmation(registry)
+    Canvas.show(
+        registry,
+        SAVE_CONFIRMATION_CANVAS_ID
+    )
+end
+
+local function closeSaveConfirmation(registry)
+    Canvas.hide(
+        registry,
+        SAVE_CONFIRMATION_CANVAS_ID
+    )
+end
+
 local function saveAndQuit(registry)
     if not saveGame(registry) then
         return
@@ -80,12 +95,21 @@ local function saveAndQuit(registry)
     })
 end
 
+local function isSaveConfirmationOpen(registry)
+    return Canvas.isActive(
+        registry,
+        SAVE_CONFIRMATION_CANVAS_ID
+    )
+end
+
 local function processAction(registry, action)
     if action == "resumeGame" then
         closePauseMenu(registry)
 
     elseif action == "saveGame" then
-        saveGame(registry)
+        if saveGame(registry) then
+            openSaveConfirmation(registry)
+        end
 
     elseif action == "saveAndQuit" then
         saveAndQuit(registry)
@@ -105,7 +129,11 @@ function PauseMenuSystem.update(scene, dt)
             )
 
         if event and event.key == "escape" then
-            togglePauseMenu(registry)
+            if isSaveConfirmationOpen(registry) then
+                closeSaveConfirmation(registry)
+            else
+                togglePauseMenu(registry)
+            end
         end
     end
 
@@ -124,15 +152,22 @@ function PauseMenuSystem.update(scene, dt)
                 "buttonPressed"
             )
 
-        if event
-            and event.canvasId == PAUSE_CANVAS_ID then
+        if event then
+            if event.canvasId == PAUSE_CANVAS_ID then
+                processAction(
+                    registry,
+                    event.action
+                )
 
-            processAction(
-                registry,
-                event.action
-            )
+                registry:destroy(eventEntity)
+            
+            elseif event.canvasId == SAVE_CONFIRMATION_CANVAS_ID then
+                if event.action == "closeSaveConfirmation" then
+                    closeSaveConfirmation(registry)
+                end
 
-            registry:destroy(eventEntity)
+                registry:destroy(eventEntity)
+            end
         end
     end
 end

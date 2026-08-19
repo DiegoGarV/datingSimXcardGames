@@ -115,6 +115,17 @@ local function playSelectedCard(registry, battle)
         return
     end
 
+    local gameState = registry:resource("gameState")
+
+    if gameState then
+        gameState.run.level = gameState.run.level + 1
+
+        print(
+            "GameState level:",
+            gameState.run.level
+        )
+    end
+
     startPlayerAnimation(registry)
 end
 

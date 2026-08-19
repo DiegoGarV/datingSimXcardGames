@@ -61,6 +61,64 @@ function PauseMenuSetupSystem.setup(scene)
         action = "saveAndQuit",
         index = 3
     })
+
+    Canvas.create(registry, {
+        id = "saveConfirmation",
+        active = false,
+        interactive = true,
+        blocksGameplay = true,
+        navigation = "vertical",
+        selectedIndex = 1,
+        priority = 200,
+        dim = 0.15
+    })
+
+    Canvas.createPanel(registry, {
+        canvasId = "saveConfirmation",
+
+        x = 225,
+        y = 210,
+        width = 350,
+        height = 180,
+
+        color = {
+            r = 0.2,
+            g = 0.2,
+            b = 0.25
+        }
+    })
+
+    Canvas.createText(registry, {
+        canvasId = "saveConfirmation",
+
+        value = "Game saved successfully!",
+        font = "normal",
+
+        x = 250,
+        y = 285,
+        width = 300,
+        align = "center"
+    })
+
+    Canvas.createButton(registry, {
+        canvasId = "saveConfirmation",
+
+        text = "X",
+        action = "closeSaveConfirmation",
+        index = 1,
+        active = true,
+
+        x = 520,
+        y = 225,
+        width = 40,
+        height = 40,
+
+        color = {
+            r = 0.55,
+            g = 0.2,
+            b = 0.2
+        }
+    })
 end
 
 return PauseMenuSetupSystem

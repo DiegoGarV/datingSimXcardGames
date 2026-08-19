@@ -1,4 +1,5 @@
 local GameConfig = require("src.GameConfig")
+local SaveFile = require("src.state.SaveFile")
 local SceneManager = require("src.ecs.SceneManager")
 local DebugOverlay = require("src.debug.DebugOverlay")
 local attachDebugOverlay = require("src.debug.attach")
@@ -6,6 +7,7 @@ local MainMenuScene = require("src.scenes.MainMenuScene")
 local TestScene = require("src.scenes.TestScene")
 
 function love.load(args)
+    -- SaveFile.delete()
     -- Debug
     print(love.filesystem.getSaveDirectory())
 

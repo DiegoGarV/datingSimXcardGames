@@ -27,7 +27,7 @@ local function processButtonAction(registry, action)
             registry:spawn({
                 sceneChangeRequest = {
                     target = "test",
-                    payload = gameState
+                    payload = {gameState = gameState}
                 }
             })
         end
