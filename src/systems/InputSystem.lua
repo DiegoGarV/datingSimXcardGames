@@ -401,23 +401,17 @@ end
 function InputSystem.setup(scene)
     local registry = scene.registry
 
-    local _, input = registry:first("input")
-
-    if input then
+    if registry:resource("input") then
         return
     end
 
-    registry:spawn({
-        input = {
-            mouse = {
-                x = 0,
-                y = 0,
-
-                dx = 0,
-                dy = 0,
-
-                buttons = {}
-            }
+    registry:setResource("input", {
+        mouse = {
+            x = 0,
+            y = 0,
+            dx = 0,
+            dy = 0,
+            buttons = {}
         }
     })
 end
@@ -425,7 +419,7 @@ end
 function InputSystem.update(scene, dt)
     local registry = scene.registry
     local activeCanvas = Canvas.getActiveInteractive(registry)
-    local _, input = registry:first("input")
+    local input = registry:resource("input")
 
     if not input then
         return

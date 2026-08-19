@@ -1,9 +1,12 @@
 local GameConfig = require("src.GameConfig")
 local Canvas = require("src.ui.Canvas")
+local SaveFile = require("src.state.SaveFile")
 
 local MainMenuSetupSystem = {}
 
 MainMenuSetupSystem.name = "MainMenuSetupSystem"
+
+local hasSaveFile = SaveFile.exists()
 
 function MainMenuSetupSystem.setup(scene)
     local registry = scene.registry
@@ -66,10 +69,10 @@ function MainMenuSetupSystem.setup(scene)
     Canvas.createButton(registry, {
         canvasId = "mainMenu",
 
-        text = "Save Game",
-        action = "saveGame",
+        text = "Load Game",
+        action = "loadGame",
         index = 2,
-        active = false,
+        active = hasSaveFile,
 
         x = buttonX,
         y = 320,

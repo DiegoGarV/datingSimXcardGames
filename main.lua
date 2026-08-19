@@ -6,6 +6,9 @@ local MainMenuScene = require("src.scenes.MainMenuScene")
 local TestScene = require("src.scenes.TestScene")
 
 function love.load(args)
+    -- Debug
+    print(love.filesystem.getSaveDirectory())
+
     love.window.setTitle("Dating Sim X Card Game") -- Aún no he pensado en el nombre del juego XD
     love.window.setMode(GameConfig.width, GameConfig.height)
 

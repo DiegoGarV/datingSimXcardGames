@@ -132,6 +132,32 @@ function Registry:first(name)
     end
 end
 
+function Registry:setResource(name, value)
+    local entity = self:first(name)
+
+    if entity then
+        self.components[name][entity] = value
+        return
+    end
+
+    self:spawn({
+        [name] = value
+    })
+end
+
+function Registry:resource(name)
+    local _, value = self:first(name)
+    return value
+end
+
+function Registry:removeResource(name)
+    local entity = self:first(name)
+
+    if entity then
+        self:destroy(entity)
+    end
+end
+
 function Registry:remove(entity, name)
     local store = self.components[name]
 
