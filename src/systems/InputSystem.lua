@@ -1,4 +1,5 @@
 local Canvas = require("src.ui.Canvas")
+local HitTest = require("src.ui.HitTest")
 
 local InputSystem = {}
 
@@ -68,16 +69,12 @@ end
 
 local function findButtonAtPosition(buttons, x, y)
     for _, entry in ipairs(buttons) do
-        local position = entry.position
-        local rectangle = entry.rectangle
-
-        local inside =
-            x >= position.x
-            and x <= position.x + rectangle.width
-            and y >= position.y
-            and y <= position.y + rectangle.height
-
-        if inside then
+        if HitTest.rectangle(
+            entry.position,
+            entry.rectangle,
+            x,
+            y
+        ) then
             return entry
         end
     end

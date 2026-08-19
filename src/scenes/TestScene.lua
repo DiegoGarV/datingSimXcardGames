@@ -8,6 +8,7 @@ local PauseMenuSystem = require("src.systems.pause.PauseMenuSystem")
 local TestAnimationSystem = require("src.systems.test.TestAnimationSystem")
 local TestRenderSystem = require("src.systems.test.TestRenderSystem")
 local UISystem = require("src.systems.UISystem")
+local TooltipSystem = require("src.systems.TooltipSystem")
 
 local TestScene = {}
 
@@ -29,6 +30,7 @@ function TestScene.new(payload)
     scene:addSystem(TestAnimationSystem)
     scene:addSystem(TestRenderSystem)
     scene:addSystem(UISystem)
+    scene:addSystem(TooltipSystem)
 
     return scene
 end

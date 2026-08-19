@@ -1,15 +1,10 @@
+local HitTest = require("src.ui.HitTest")
+
 local TestBattleSystem = {}
 
 TestBattleSystem.name = "TestBattleSystem"
 
 local HOVER_OFFSET = 25
-
-local function isInsideCard(position, rectangle, x, y)
-    return x >= position.x
-        and x <= position.x + rectangle.width
-        and y >= position.y
-        and y <= position.y + rectangle.height
-end
 
 local function getPlayButton(registry)
     for entity, button in registry:each("button") do
@@ -27,7 +22,7 @@ local function updateCardHover(registry, mouseX, mouseY)
         "rectangle",
         "card"
     ) do
-        card.hovered = isInsideCard(
+        card.hovered = HitTest.rectangle(
             position,
             rectangle,
             mouseX,
@@ -50,7 +45,7 @@ local function selectCard(registry, battle, x, y)
         "rectangle",
         "card"
     ) do
-        if isInsideCard(
+        if HitTest.rectangle(
             position,
             rectangle,
             x,

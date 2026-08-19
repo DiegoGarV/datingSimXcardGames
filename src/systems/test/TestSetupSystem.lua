@@ -12,6 +12,29 @@ local cardColors = {
     { r = 0.65, g = 0.35, b = 0.8 }
 }
 
+local cardTooltips = {
+    {
+        title = "Flirt",
+        text = "Gain relationship progress with the girl."
+    },
+    {
+        title = "Compliment",
+        text = "A simple way to improve your relationship."
+    },
+    {
+        title = "Defend",
+        text = "Protect yourself from the rival's next sabotage."
+    },
+    {
+        title = "Sabotage",
+        text = "Interfere with the rival's progress."
+    },
+    {
+        title = "Charm",
+        text = "A stronger relationship action with a higher cost."
+    }
+}
+
 local function createAvatar(registry, x, y, role)
     registry:spawn({
         position = {
@@ -82,6 +105,8 @@ local function createCards(registry)
                 hovered = false,
                 selected = false
             },
+
+            tooltip = cardTooltips[i],
 
             color = cardColors[i]
         })
