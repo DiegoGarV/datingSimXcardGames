@@ -2,8 +2,6 @@ local GameState = {}
 
 function GameState.new(seed)
     return {
-        version = 0.1,
-
         player = {
             name = nil
         },

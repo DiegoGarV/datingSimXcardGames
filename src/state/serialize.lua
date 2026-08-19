@@ -121,6 +121,8 @@ function serialize.decode(text)
         return nil
     end
 
+    setfenv(chunk, {})
+
     local ok, data = pcall(chunk)
 
     if not ok or type(data) ~= "table" then

@@ -8,7 +8,7 @@ MainMenuSetupSystem.name = "MainMenuSetupSystem"
 
 function MainMenuSetupSystem.setup(scene)
     local registry = scene.registry
-    local hasSaveFile = SaveFile.exists()
+    local hasSaveFile = SaveFile.isValid()
     local screenWidth = GameConfig.width
     local buttonWidth = 300
     local buttonHeight = 60
@@ -103,6 +103,72 @@ function MainMenuSetupSystem.setup(scene)
             g = 0.25,
             b = 0.55
         }
+    })
+
+    Canvas.create(registry, {
+        id = "newGameConfirmation",
+        active = false,
+        interactive = true,
+        blocksGameplay = false,
+        navigation = "vertical",
+        selectedIndex = 1,
+        priority = 100,
+        dim = 0.5
+    })
+
+    Canvas.createPanel(registry, {
+        canvasId = "newGameConfirmation",
+
+        x = 175,
+        y = 180,
+        width = 450,
+        height = 240,
+
+        color = {
+            r = 0.2,
+            g = 0.2,
+            b = 0.25
+        }
+    })
+
+    Canvas.createText(registry, {
+        canvasId = "newGameConfirmation",
+
+        value = "Are you sure you want to delete your previous progress and start a new one?",
+        font = "normal",
+
+        x = 210,
+        y = 220,
+        width = 380,
+        align = "center"
+    })
+
+    Canvas.createButton(registry, {
+        canvasId = "newGameConfirmation",
+
+        text = "Accept",
+        action = "confirmNewGame",
+        index = 1,
+        active = true,
+
+        x = 240,
+        y = 330,
+        width = 140,
+        height = 50
+    })
+
+    Canvas.createButton(registry, {
+        canvasId = "newGameConfirmation",
+
+        text = "Return",
+        action = "cancelNewGame",
+        index = 2,
+        active = true,
+
+        x = 420,
+        y = 330,
+        width = 140,
+        height = 50
     })
 end
 

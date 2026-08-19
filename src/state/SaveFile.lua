@@ -2,7 +2,7 @@ local serialize = require("src.state.serialize")
 
 local SaveFile = {
     FILENAME = "save.lua",
-    VERSION = 0.1
+    VERSION = 1
 }
 
 function SaveFile.save(data)
@@ -43,6 +43,10 @@ function SaveFile.exists()
         SaveFile.FILENAME,
         "file"
     ) ~= nil
+end
+
+function SaveFile.isValid()
+    return SaveFile.load() ~= nil
 end
 
 function SaveFile.delete()
