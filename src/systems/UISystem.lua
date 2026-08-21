@@ -17,14 +17,10 @@ function UISystem.setup(scene)
     registry:spawn({
         uiResources = {
             fonts = {
-                title =
-                    love.graphics.newFont(48),
-
-                normal =
-                    love.graphics.newFont(24),
-
-                button =
-                    love.graphics.newFont(24)
+                title = love.graphics.newFont(48),
+                normal = love.graphics.newFont(24),
+                button = love.graphics.newFont(24),
+                small = love.graphics.newFont(18)
             }
         }
     })
@@ -355,10 +351,52 @@ local function drawCanvasPanels(registry, canvasId)
     end
 end
 
+local function drawCanvasCircles(registry, canvasId)
+    for _, position, circle, color, uiElement in
+        registry:each(
+            "position",
+            "circle",
+            "color",
+            "uiElement",
+            "uiCircle"
+        )
+    do
+        if uiElement.canvasId == canvasId then
+            love.graphics.setColor(
+                color.r or 1,
+                color.g or 1,
+                color.b or 1,
+                color.a or 1
+            )
+
+            love.graphics.circle(
+                "fill",
+                position.x,
+                position.y,
+                circle.radius
+            )
+
+            love.graphics.setColor(1, 1, 1, 1)
+
+            love.graphics.circle(
+                "line",
+                position.x,
+                position.y,
+                circle.radius
+            )
+        end
+    end
+end
+
 local function drawCanvas(registry, fonts, canvas)
     drawCanvasBackground(canvas)
 
     drawCanvasPanels(
+        registry,
+        canvas.id
+    )
+
+    drawCanvasCircles(
         registry,
         canvas.id
     )

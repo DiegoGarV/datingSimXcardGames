@@ -110,6 +110,28 @@ local function playSelectedCard(registry, battle)
         return
     end
 
+    local battleState = registry:resource("testBattle")
+
+    if battleState then
+        battleState.energy.current =
+            math.max(
+                0,
+                battleState.energy.current - 1
+            )
+
+        battleState.playerRelationship.current =
+            math.min(
+                battleState.playerRelationship.max,
+                battleState.playerRelationship.current + 5
+            )
+
+        battleState.patience.current =
+            math.max(
+                0,
+                battleState.patience.current - 2
+            )
+    end
+
     local gameState = registry:resource("gameState")
 
     if gameState then

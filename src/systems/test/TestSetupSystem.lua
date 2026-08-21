@@ -84,7 +84,7 @@ local function createCards(registry)
     local cardWidth = 90
     local cardHeight = 120
     local gap = 15
-    local startX = 110
+    local startX = 125
     local y = 450
 
     for i = 1, 5 do
@@ -117,7 +117,31 @@ function TestSetupSystem.setup(scene)
     local registry = scene.registry
 
     registry:setResource("testBattle", {
-        selectedCard = nil
+        selectedCard = nil,
+
+        patience = {
+            current = 80,
+            max = 100
+        },
+
+        playerRelationship = {
+            current = 35,
+            max = 100
+        },
+
+        rivalRelationship = {
+            current = 50,
+            max = 100
+        },
+
+        energy = {
+            current = 3,
+            max = 3
+        },
+
+        deck = {
+            current = 12
+        }
     })
 
     createAvatar(
@@ -143,18 +167,6 @@ function TestSetupSystem.setup(scene)
         interactive = true,
         navigation = "vertical",
         selectedIndex = 1
-    })
-
-    Canvas.createButton(registry, {
-        canvasId = "testBattleUI",
-        x = 650,
-        y = 470,
-        width = 110,
-        height = 45,
-        text = "Play Card",
-        action = "playCard",
-        index = 1,
-        active = false
     })
 end
 

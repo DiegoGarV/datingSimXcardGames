@@ -129,6 +129,35 @@ function Canvas.createPanel(registry, options)
     })
 end
 
+function Canvas.createCircle(registry, options)
+    options = options or {}
+
+    return registry:spawn({
+        position = {
+            x = options.x or 0,
+            y = options.y or 0
+        },
+
+        circle = {
+            radius = options.radius or 20
+        },
+
+        color = options.color or {
+            r = 1,
+            g = 0.5,
+            b = 0.2
+        },
+
+        uiElement = {
+            canvasId = options.canvasId
+        },
+
+        uiCircle = {
+            id = options.id
+        }
+    })
+end
+
 function Canvas.get(registry, canvasId)
     for entity, canvas in
         registry:each("canvas")

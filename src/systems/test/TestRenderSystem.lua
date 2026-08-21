@@ -1,3 +1,5 @@
+local GameConfig = require("src.GameConfig")
+
 local TestRenderSystem = {}
 
 TestRenderSystem.name = "TestRenderSystem"
@@ -151,16 +153,12 @@ function TestRenderSystem.draw(scene)
     if gameState then
         love.graphics.setColor(1, 1, 1, 1)
 
-        love.graphics.print(
+        love.graphics.printf(
             "Level: " .. tostring(gameState.run.level),
+            0,
             20,
-            20
-        )
-
-        love.graphics.print(
-            "Seed: " .. tostring(gameState.run.seed),
-            20,
-            45
+            GameConfig.width - 20,
+            "right"
         )
     end
 end
