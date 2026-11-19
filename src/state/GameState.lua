@@ -22,6 +22,10 @@ function GameState.new(seed)
 
             development = {
                 actionsRemaining = 2
+            },
+
+            cardReward = {
+                claimedForLevel = nil
             }
         },
 
