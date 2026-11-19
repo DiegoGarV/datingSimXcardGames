@@ -1,8 +1,6 @@
-local GameConfig = require("src.GameConfig")
+local FightRenderSystem = {}
 
-local TestRenderSystem = {}
-
-TestRenderSystem.name = "TestRenderSystem"
+FightRenderSystem.name = "FightRenderSystem"
 
 local function drawCards(registry)
     for _, position, rectangle, color, card in registry:each(
@@ -126,9 +124,8 @@ local function drawGirl(registry)
     end
 end
 
-function TestRenderSystem.draw(scene)
+function FightRenderSystem.draw(scene)
     local registry = scene.registry
-    local gameState = registry:resource("gameState")
 
     love.graphics.clear(
         0.08,
@@ -149,18 +146,6 @@ function TestRenderSystem.draw(scene)
     )
 
     love.graphics.setLineWidth(1)
-
-    if gameState then
-        love.graphics.setColor(1, 1, 1, 1)
-
-        love.graphics.printf(
-            "Level: " .. tostring(gameState.run.level),
-            0,
-            20,
-            GameConfig.width - 20,
-            "right"
-        )
-    end
 end
 
-return TestRenderSystem
+return FightRenderSystem

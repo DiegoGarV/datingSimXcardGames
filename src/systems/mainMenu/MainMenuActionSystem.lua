@@ -17,11 +17,8 @@ local function startNewGame(registry)
 
     registry:spawn({
         sceneChangeRequest = {
-            target = "test",
-
-            payload = {
-                gameState = gameState
-            }
+            target = "fight",
+            payload = {gameState = gameState}
         }
     })
 end
@@ -60,7 +57,7 @@ local function processButtonAction(registry, action)
         if gameState then
             registry:spawn({
                 sceneChangeRequest = {
-                    target = "test",
+                    target = "fight",
                     payload = {gameState = gameState}
                 }
             })

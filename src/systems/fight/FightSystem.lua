@@ -1,8 +1,8 @@
 local HitTest = require("src.ui.HitTest")
 
-local TestBattleSystem = {}
+local FightSystem = {}
 
-TestBattleSystem.name = "TestBattleSystem"
+FightSystem.name = "FightSystem"
 
 local HOVER_OFFSET = 25
 
@@ -89,7 +89,7 @@ local function startPlayerAnimation(registry)
         "avatar"
     ) do
         if avatar.role == "player" then
-            registry:add(entity, "testAnimation", {
+            registry:add(entity, "fightAnimation", {
                 startX = position.x,
                 startY = position.y,
                 targetX = position.x + 80,
@@ -110,7 +110,7 @@ local function playSelectedCard(registry, battle)
         return
     end
 
-    local battleState = registry:resource("testBattle")
+    local battleState = registry:resource("fightState")
 
     if battleState then
         battleState.energy.current =
@@ -132,24 +132,13 @@ local function playSelectedCard(registry, battle)
             )
     end
 
-    local gameState = registry:resource("gameState")
-
-    if gameState then
-        gameState.run.level = gameState.run.level + 1
-
-        print(
-            "GameState level:",
-            gameState.run.level
-        )
-    end
-
     startPlayerAnimation(registry)
 end
 
-function TestBattleSystem.update(scene, dt)
+function FightSystem.update(scene, dt)
     local registry = scene.registry
     local input = registry:resource("input")
-    local battle = registry:resource("testBattle")
+    local battle = registry:resource("fightState")
 
     if not input or not battle then
         return
@@ -200,4 +189,4 @@ function TestBattleSystem.update(scene, dt)
     end
 end
 
-return TestBattleSystem
+return FightSystem

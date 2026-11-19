@@ -35,7 +35,7 @@ end
 
 function BattleHUDSystem.update(scene, dt)
     local registry = scene.registry
-    local battle = registry:resource("testBattle")
+    local battle = registry:resource("fightState")
 
     if not battle then
         return

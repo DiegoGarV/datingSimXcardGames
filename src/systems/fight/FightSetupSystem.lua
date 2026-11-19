@@ -1,8 +1,6 @@
-local Canvas = require("src.ui.Canvas")
+local FightSetupSystem = {}
 
-local TestSetupSystem = {}
-
-TestSetupSystem.name = "TestSetupSystem"
+FightSetupSystem.name = "FightSetupSystem"
 
 local cardColors = {
     { r = 0.8, g = 0.25, b = 0.25 },
@@ -113,10 +111,10 @@ local function createCards(registry)
     end
 end
 
-function TestSetupSystem.setup(scene)
+function FightSetupSystem.setup(scene)
     local registry = scene.registry
 
-    registry:setResource("testBattle", {
+    registry:setResource("fightState", {
         selectedCard = nil,
 
         patience = {
@@ -160,14 +158,6 @@ function TestSetupSystem.setup(scene)
 
     createGirl(registry)
     createCards(registry)
-
-    Canvas.create(registry, {
-        id = "testBattleUI",
-        active = true,
-        interactive = true,
-        navigation = "vertical",
-        selectedIndex = 1
-    })
 end
 
-return TestSetupSystem
+return FightSetupSystem

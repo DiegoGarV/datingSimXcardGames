@@ -4,7 +4,7 @@ local SceneManager = require("src.ecs.SceneManager")
 local DebugOverlay = require("src.debug.DebugOverlay")
 local attachDebugOverlay = require("src.debug.attach")
 local MainMenuScene = require("src.scenes.MainMenuScene")
-local TestScene = require("src.scenes.TestScene")
+local FightScene = require("src.scenes.FightScene")
 
 function love.load(args)
     -- SaveFile.delete()
@@ -15,7 +15,7 @@ function love.load(args)
     love.window.setMode(GameConfig.width, GameConfig.height)
 
     SceneManager.register("mainMenu", MainMenuScene.new)
-    SceneManager.register("test", TestScene.new)
+    SceneManager.register("fight", FightScene.new)
 
     SceneManager.change("mainMenu")
 

@@ -1,17 +1,17 @@
-local TestAnimationSystem = {}
+local FightAnimationSystem = {}
 
-TestAnimationSystem.name = "TestAnimationSystem"
+FightAnimationSystem.name = "FightAnimationSystem"
 
 local function lerp(a, b, t)
     return a + (b - a) * t
 end
 
-function TestAnimationSystem.update(scene, dt)
+function FightAnimationSystem.update(scene, dt)
     local registry = scene.registry
 
     for entity, position, animation in registry:each(
         "position",
-        "testAnimation"
+        "fightAnimation"
     ) do
         animation.progress =
             animation.progress
@@ -55,7 +55,7 @@ function TestAnimationSystem.update(scene, dt)
 
                 registry:remove(
                     entity,
-                    "testAnimation"
+                    "fightAnimation"
                 )
             else
                 animation.returning = true
@@ -65,4 +65,4 @@ function TestAnimationSystem.update(scene, dt)
     end
 end
 
-return TestAnimationSystem
+return FightAnimationSystem
