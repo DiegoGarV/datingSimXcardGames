@@ -5,6 +5,8 @@ local DebugOverlay = require("src.debug.DebugOverlay")
 local attachDebugOverlay = require("src.debug.attach")
 local MainMenuScene = require("src.scenes.MainMenuScene")
 local FightScene = require("src.scenes.FightScene")
+local DevelopmentScene = require("src.scenes.DevelopmentScene")
+local CardRewardScene = require("src.scenes.CardRewardScene")
 
 function love.load(args)
     -- SaveFile.delete()
@@ -16,6 +18,8 @@ function love.load(args)
 
     SceneManager.register("mainMenu", MainMenuScene.new)
     SceneManager.register("fight", FightScene.new)
+    SceneManager.register("development", DevelopmentScene.new)
+    SceneManager.register("cardReward", CardRewardScene.new)
 
     SceneManager.change("mainMenu")
 

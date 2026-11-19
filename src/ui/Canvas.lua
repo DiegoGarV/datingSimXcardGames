@@ -86,7 +86,8 @@ function Canvas.createButton(registry, options)
             text = options.text or "",
             action = options.action,
             index = options.index,
-            active = options.active ~= false
+            active = options.active ~= false,
+            font = options.font or "button"
         }
     })
 end

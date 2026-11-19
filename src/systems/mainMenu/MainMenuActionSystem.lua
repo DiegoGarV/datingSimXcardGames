@@ -52,16 +52,22 @@ local function processButtonAction(registry, action)
         closeNewGameConfirmation(registry)
 
     elseif action == "loadGame" then
-        local gameState = SaveFile.load()
+    local gameState = SaveFile.load()
 
-        if gameState then
-            registry:spawn({
-                sceneChangeRequest = {
-                    target = "fight",
-                    payload = {gameState = gameState}
+    if gameState then
+        local target = gameState.run.currentScene
+            or "fight"
+
+        registry:spawn({
+            sceneChangeRequest = {
+                target = target,
+
+                payload = {
+                    gameState = gameState
                 }
-            })
-        end
+            }
+        })
+    end
 
     elseif action == "quit" then
         love.event.quit()

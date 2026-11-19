@@ -117,6 +117,9 @@ function FightSetupSystem.setup(scene)
     registry:setResource("fightState", {
         selectedCard = nil,
 
+        victoryPending = false,
+        victoryTimer = 0,
+
         patience = {
             current = 80,
             max = 100
@@ -139,7 +142,7 @@ function FightSetupSystem.setup(scene)
 
         deck = {
             current = 12
-        }
+        },
     })
 
     createAvatar(

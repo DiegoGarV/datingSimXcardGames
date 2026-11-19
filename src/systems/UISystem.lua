@@ -227,7 +227,7 @@ local function drawButtonText(
     button,
     isActive
 )
-    local font = fonts.button or fonts.normal 
+    local font = fonts[button.font] or fonts.button or fonts.normal
     love.graphics.setFont(font)
 
     if isActive then

@@ -1,5 +1,6 @@
 local Canvas = require("src.ui.Canvas")
 local SaveFile = require("src.state.SaveFile")
+local SceneManager = require("src.ecs.SceneManager")
 
 local PauseMenuSystem = {}
 
@@ -58,6 +59,8 @@ local function saveGame(registry)
         print("Error: no se encontró gameState para guardar")
         return false
     end
+
+    gameState.run.currentScene = SceneManager.currentName()
 
     local success = SaveFile.save(gameState)
 

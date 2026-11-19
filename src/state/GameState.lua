@@ -10,10 +10,18 @@ function GameState.new(seed)
             active = false,
             seed = seed,
             level = 1,
+            currentScene = "fight",
             deck = {},
 
             progression = {
+                conquest = 1,
+                attack = 1,
+                protection = 1,
                 completedLevels = {}
+            },
+
+            development = {
+                actionsRemaining = 2
             }
         },
 

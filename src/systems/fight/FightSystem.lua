@@ -105,6 +105,21 @@ local function startPlayerAnimation(registry)
     end
 end
 
+local function startVictory(registry, battle)
+    if battle.victoryPending then
+        return
+    end
+
+    battle.victoryPending = true
+    battle.victoryTimer = 2
+
+    local _, playButton = getPlayButton(registry)
+
+    if playButton then
+        playButton.active = false
+    end
+end
+
 local function playSelectedCard(registry, battle)
     if not battle.selectedCard then
         return
@@ -124,6 +139,15 @@ local function playSelectedCard(registry, battle)
                 battleState.playerRelationship.max,
                 battleState.playerRelationship.current + 5
             )
+        
+        if battleState.playerRelationship.current
+            >= battleState.playerRelationship.max
+        then
+            startVictory(
+                registry,
+                battleState
+            )
+        end
 
         battleState.patience.current =
             math.max(
@@ -141,6 +165,32 @@ function FightSystem.update(scene, dt)
     local battle = registry:resource("fightState")
 
     if not input or not battle then
+        return
+    end
+
+    if battle.victoryPending then
+        battle.victoryTimer =
+            battle.victoryTimer - dt
+
+        if battle.victoryTimer <= 0 then
+            local gameState =
+                registry:resource("gameState")
+
+            if gameState then
+                gameState.run.development.actionsRemaining = 2
+
+                registry:spawn({
+                    sceneChangeRequest = {
+                        target = "development",
+
+                        payload = {
+                            gameState = gameState
+                        }
+                    }
+                })
+            end
+        end
+
         return
     end
 
