@@ -8,6 +8,7 @@ local FightScene = require("src.scenes.FightScene")
 local DevelopmentScene = require("src.scenes.DevelopmentScene")
 local CardRewardScene = require("src.scenes.CardRewardScene")
 local CardInventoryScene = require("src.scenes.CardInventoryScene")
+local RoadmapScene = require("src.scenes.RoadmapScene")
 
 function love.load(args)
     -- SaveFile.delete()
@@ -22,6 +23,7 @@ function love.load(args)
     SceneManager.register("development", DevelopmentScene.new)
     SceneManager.register("cardReward", CardRewardScene.new)
     SceneManager.register("cardInventory", CardInventoryScene.new)
+    SceneManager.register("roadmap", RoadmapScene.new)
 
     SceneManager.change("mainMenu")
 

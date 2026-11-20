@@ -384,6 +384,47 @@ function Canvas.scroll(
     end
 end
 
+function Canvas.resetScrollArea(
+    registry,
+    scrollAreaId
+)
+    local _, area =
+        Canvas.getScrollArea(
+            registry,
+            scrollAreaId
+        )
+
+    if not area then
+        return
+    end
+
+    local offset =
+        area.offsetY
+
+    if offset == 0 then
+        return
+    end
+
+    for _,
+        position,
+        uiElement
+    in
+        registry:each(
+            "position",
+            "uiElement"
+        )
+    do
+        if uiElement.scrollAreaId
+            == scrollAreaId
+        then
+            position.y =
+                position.y + offset
+        end
+    end
+
+    area.offsetY = 0
+end
+
 function Canvas.isPointInsideScrollArea(
     registry,
     scrollAreaId,

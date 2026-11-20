@@ -235,6 +235,97 @@ local function createDetailsPanel(registry)
     )
 end
 
+local function createSortPanel(registry)
+    Canvas.create(
+        registry,
+        {
+            id = "inventorySort",
+            active = false,
+            interactive = true,
+            blocksGameplay = true,
+            navigation = "vertical",
+            selectedIndex = 1,
+            priority = 25,
+            dim = 0
+        }
+    )
+
+    Canvas.createPanel(
+        registry,
+        {
+            canvasId = "inventorySort",
+
+            x = 560,
+            y = 95,
+
+            width = 225,
+            height = 260,
+
+            color = {
+                r = 0.12,
+                g = 0.12,
+                b = 0.16
+            }
+        }
+    )
+
+    Canvas.createText(
+        registry,
+        {
+            id = "sortTitle",
+            canvasId = "inventorySort",
+
+            x = 575,
+            y = 110,
+            width = 165,
+
+            value = "SORT BY",
+            font = "small",
+            align = "center"
+        }
+    )
+
+    local options = {
+        {
+            text = "Category",
+            action = "sortCategory"
+        },
+        {
+            text = "Name",
+            action = "sortName"
+        },
+        {
+            text = "Rarity",
+            action = "sortRarity"
+        },
+        {
+            text = "Cost",
+            action = "sortCost"
+        }
+    }
+
+    for index, option in ipairs(options) do
+        Canvas.createButton(
+            registry,
+            {
+                canvasId = "inventorySort",
+
+                x = 580,
+                y = 145 + (index - 1) * 48,
+
+                width = 187,
+                height = 38,
+
+                text = option.text,
+                font = "small",
+
+                action = option.action,
+                index = index
+            }
+        )
+    end
+end
+
 function CardInventorySetupSystem.setup(scene)
     local registry =
         scene.registry
@@ -271,7 +362,19 @@ function CardInventorySetupSystem.setup(scene)
         "cardInventoryState",
         {
             selectedCardId = nil,
-            sortMode = "category"
+            sortMode = "category",
+            sortAscending = true,
+            needsSort = true,
+
+            layout = {
+                startX = START_X,
+                startY = START_Y,
+                cardWidth = CARD_WIDTH,
+                cardHeight = CARD_HEIGHT,
+                gapX = GAP_X,
+                gapY = GAP_Y,
+                columns = COLUMNS
+            }
         }
     )
 
@@ -375,6 +478,7 @@ function CardInventorySetupSystem.setup(scene)
     end
 
     createDetailsPanel(registry)
+    createSortPanel(registry)
 end
 
 return CardInventorySetupSystem
