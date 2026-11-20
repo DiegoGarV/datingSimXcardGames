@@ -275,6 +275,50 @@ local function drawRewards(
     end
 end
 
+local function drawPlayer(
+    registry
+)
+    for _,
+        position,
+        player
+    in
+        registry:each(
+            "position",
+            "roadmapPlayer"
+        )
+    do
+        love.graphics.setColor(
+            1,
+            1,
+            1,
+            1
+        )
+
+        love.graphics.circle(
+            "fill",
+            position.x,
+            position.y,
+            player.radius
+        )
+
+        love.graphics.setColor(
+            0.1,
+            0.1,
+            0.12,
+            1
+        )
+
+        love.graphics.setLineWidth(3)
+
+        love.graphics.circle(
+            "line",
+            position.x,
+            position.y,
+            player.radius
+        )
+    end
+end
+
 function RoadmapRenderSystem.draw(
     scene
 )
@@ -311,6 +355,10 @@ function RoadmapRenderSystem.draw(
     )
 
     drawRewards(
+        registry
+    )
+
+    drawPlayer(
         registry
     )
 

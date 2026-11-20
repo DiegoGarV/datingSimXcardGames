@@ -4,6 +4,9 @@ local RoadmapGenerator = require("src.data.RoadmapGenerator")
 local LEVEL_START_Y = 200
 local LEVEL_GAP_Y = 170
 
+local PLAYER_RADIUS = 12
+local PLAYER_SPEED = 220
+
 local NODE_RADIUS = 30
 
 local NODE_X_POSITIONS = {
@@ -168,6 +171,41 @@ local function createRewards(
     end
 end
 
+local function createPlayer(
+    registry,
+    nodeEntities,
+    currentNode
+)
+    local nodeEntity =
+        nodeEntities[currentNode]
+
+    if not nodeEntity then
+        return nil
+    end
+
+    local nodePosition =
+        registry:get(
+            nodeEntity,
+            "position"
+        )
+
+    if not nodePosition then
+        return nil
+    end
+
+    return registry:spawn({
+        position = {
+            x = nodePosition.x,
+            y = nodePosition.y
+        },
+
+        roadmapPlayer = {
+            speed = PLAYER_SPEED,
+            radius = PLAYER_RADIUS
+        }
+    })
+end
+
 function RoadmapSetupSystem.setup(
     scene
 )
@@ -226,6 +264,32 @@ function RoadmapSetupSystem.setup(
         nodeEntities
     )
 
+    local playerEntity =
+        createPlayer(
+            registry,
+            nodeEntities,
+            gameState.run.roadmap.currentNode
+        )
+
+    registry:setResource(
+        "roadmapPlayerEntity",
+        playerEntity
+    )
+
+    registry:setResource(
+        "roadmapBounds",
+        {
+            left = 40,
+            right = 760,
+
+            top = 100,
+            bottom = 1490,
+
+            cameraTop = 0,
+            cameraBottom = 1090
+        }
+    )
+
     Canvas.create(
         registry,
         {
@@ -233,7 +297,7 @@ function RoadmapSetupSystem.setup(
             active = true,
             interactive = true,
             blocksGameplay = false,
-            navigation = "vertical",
+            navigation = "none",
             selectedIndex = 1,
             priority = 10,
             dim = 0
@@ -277,23 +341,24 @@ function RoadmapSetupSystem.setup(
         }
     )
     
-    local level1Entity =
-        nodeEntities[
-            gameState.run.roadmap.currentNode
-        ]
-
-    local level1Position =
-        registry:get(
-            level1Entity,
+    local playerPosition =
+        playerEntity
+        and registry:get(
+            playerEntity,
             "position"
         )
 
     local cameraY = 0
 
-    if level1Position then
+    if playerPosition then
         cameraY =
-            level1Position.y
-            - 300
+            math.max(
+                0,
+                math.min(
+                    1090,
+                    playerPosition.y - 300
+                )
+            )
     end
 
     registry:setResource(
