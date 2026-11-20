@@ -1,16 +1,9 @@
 local Scene = require("src.ecs.Scene")
-
-local RoadmapSetupSystem =
-    require("src.systems.roadmap.RoadmapSetupSystem")
-
-local RoadmapSystem =
-    require("src.systems.roadmap.RoadmapSystem")
-
-local InputSystem =
-    require("src.systems.InputSystem")
-
-local UISystem =
-    require("src.systems.UISystem")
+local GameState = require("src.state.GameState")
+local RoadmapSetupSystem = require("src.systems.roadmap.RoadmapSetupSystem")
+local RoadmapSystem = require("src.systems.roadmap.RoadmapSystem")
+local InputSystem = require("src.systems.InputSystem")
+local UISystem = require("src.systems.UISystem")
 
 local RoadmapScene = {}
 
@@ -24,6 +17,12 @@ function RoadmapScene.new(payload)
         scene.registry:setResource(
             "gameState",
             payload.gameState
+        )
+    else
+        -- Debug fallback
+        scene.registry:setResource(
+            "gameState",
+            GameState.new(12345)
         )
     end
 

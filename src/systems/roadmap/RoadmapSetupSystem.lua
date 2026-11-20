@@ -1,5 +1,5 @@
-local Canvas =
-    require("src.ui.Canvas")
+local Canvas = require("src.ui.Canvas")
+local RoadmapGenerator = require("src.data.RoadmapGenerator")
 
 local RoadmapSetupSystem = {}
 
@@ -9,8 +9,40 @@ RoadmapSetupSystem.name =
 function RoadmapSetupSystem.setup(
     scene
 )
-    local registry =
-        scene.registry
+    local registry = scene.registry
+
+    local gameState =
+        registry:resource(
+            "gameState"
+        )
+
+    if not gameState then
+        return
+    end
+
+    if not gameState.run.roadmap then
+        gameState.run.roadmap = {
+            currentNode = "level1A",
+            completedNodes = {},
+            claimedRewards = {}
+        }
+    end
+
+    local roadmap =
+        RoadmapGenerator.generate(
+            gameState.run.seed
+        )
+
+    registry:setResource(
+        "roadmapState",
+        {
+            map = roadmap,
+
+            hoveredNodeId = nil,
+
+            activeNodeId = nil
+        }
+    )
 
     Canvas.create(
         registry,
@@ -77,26 +109,6 @@ function RoadmapSetupSystem.setup(
                 "openInventory",
 
             index = 1
-        }
-    )
-
-    Canvas.createButton(
-        registry,
-        {
-            canvasId = "roadmap",
-
-            x = 300,
-            y = 435,
-
-            width = 200,
-            height = 55,
-
-            text = "Fight",
-            font = "button",
-
-            action = "startFight",
-
-            index = 2
         }
     )
 end

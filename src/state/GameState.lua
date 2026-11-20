@@ -26,6 +26,12 @@ function GameState.new(seed)
 
             cardReward = {
                 claimedForLevel = nil
+            },
+
+            roadmap = {
+                currentNode = "level1A",
+                completedNodes = {},
+                claimedRewards = {}
             }
         },
 

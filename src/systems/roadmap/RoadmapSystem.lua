@@ -46,19 +46,6 @@ function RoadmapSystem.update(
                         }
                     }
                 })
-
-            elseif event.action
-                == "startFight"
-            then
-                registry:spawn({
-                    sceneChangeRequest = {
-                        target = "fight",
-
-                        payload = {
-                            gameState = gameState
-                        }
-                    }
-                })
             end
 
             registry:destroy(
