@@ -85,7 +85,8 @@ end
 local function drawCanvasTexts(
     registry,
     fonts,
-    canvasId
+    canvasId,
+    scrollAreaId
 )
     for _, position, color,
         uiElement, text
@@ -97,7 +98,10 @@ local function drawCanvasTexts(
             "uiText"
         )
     do
-        if uiElement.canvasId == canvasId then
+        if uiElement.canvasId == canvasId
+            and uiElement.scrollAreaId
+                == scrollAreaId
+        then
             local font =
                 fonts[text.font]
                 or fonts.normal
@@ -260,7 +264,8 @@ end
 local function drawCanvasButtons(
     registry,
     fonts,
-    canvas
+    canvas,
+    scrollAreaId
 )
     for entity,
         position,
@@ -277,9 +282,17 @@ local function drawCanvasButtons(
             "button"
         )
     do
-        if uiElement.canvasId == canvas.id then 
-            local isActive = button.active ~= false 
-            local isSelected = isActive and canvas.interactive and canvas.selectedIndex == button.index
+        if uiElement.canvasId == canvas.id
+            and uiElement.scrollAreaId == scrollAreaId
+        then
+            local isActive =
+                button.active ~= false
+
+            local isSelected =
+                isActive
+                and canvas.interactive
+                and canvas.selectedIndex
+                    == button.index
 
             drawButtonBackground(
                 position,
@@ -310,45 +323,15 @@ local function drawCanvasButtons(
                 button,
                 isActive
             )
-
-            if clipRect then
-                if previousX then
-                    love.graphics.setScissor(
-                        previousX,
-                        previousY,
-                        previousWidth,
-                        previousHeight
-                    )
-                else
-                    love.graphics.setScissor()
-                end
-            end
-        end
-
-        local clipRect =
-            registry:get(
-                entity,
-                "clipRect"
-            )
-
-        local previousX,
-            previousY,
-            previousWidth,
-            previousHeight =
-                love.graphics.getScissor()
-
-        if clipRect then
-            love.graphics.setScissor(
-                clipRect.x,
-                clipRect.y,
-                clipRect.width,
-                clipRect.height
-            )
         end
     end
 end
 
-local function drawCanvasPanels(registry, canvasId)
+local function drawCanvasPanels(
+    registry, 
+    canvasId,
+    scrollAreaId
+)
     for _,
         position,
         rectangle,
@@ -364,7 +347,10 @@ local function drawCanvasPanels(registry, canvasId)
             "panel"
         )
     do
-        if uiElement.canvasId == canvasId then
+        if uiElement.canvasId == canvasId
+            and uiElement.scrollAreaId
+                == scrollAreaId
+        then
             love.graphics.setColor(
                 color.r or 1,
                 color.g or 1,
@@ -385,7 +371,11 @@ local function drawCanvasPanels(registry, canvasId)
     end
 end
 
-local function drawCanvasCircles(registry, canvasId)
+local function drawCanvasCircles(
+    registry, 
+    canvasId,
+    scrollAreaId
+)
     for _, position, circle, color, uiElement in
         registry:each(
             "position",
@@ -395,7 +385,10 @@ local function drawCanvasCircles(registry, canvasId)
             "uiCircle"
         )
     do
-        if uiElement.canvasId == canvasId then
+        if uiElement.canvasId == canvasId
+            and uiElement.scrollAreaId
+                == scrollAreaId
+        then
             love.graphics.setColor(
                 color.r or 1,
                 color.g or 1,
@@ -422,29 +415,120 @@ local function drawCanvasCircles(registry, canvasId)
     end
 end
 
-local function drawCanvas(registry, fonts, canvas)
-    drawCanvasBackground(canvas)
+local function withScrollAreaClip(
+    area,
+    drawFunction
+)
+    local previousX,
+        previousY,
+        previousWidth,
+        previousHeight =
+            love.graphics.getScissor()
 
+    if previousX then
+        love.graphics.intersectScissor(
+            area.x,
+            area.y,
+            area.width,
+            area.height
+        )
+    else
+        love.graphics.setScissor(
+            area.x,
+            area.y,
+            area.width,
+            area.height
+        )
+    end
+
+    drawFunction()
+
+    if previousX then
+        love.graphics.setScissor(
+            previousX,
+            previousY,
+            previousWidth,
+            previousHeight
+        )
+    else
+        love.graphics.setScissor()
+    end
+end
+
+local function drawCanvasElements(
+    registry,
+    fonts,
+    canvas,
+    scrollAreaId
+)
     drawCanvasPanels(
         registry,
-        canvas.id
+        canvas.id,
+        scrollAreaId
     )
 
     drawCanvasCircles(
         registry,
-        canvas.id
+        canvas.id,
+        scrollAreaId
     )
 
     drawCanvasTexts(
         registry,
         fonts,
-        canvas.id
+        canvas.id,
+        scrollAreaId
     )
 
     drawCanvasButtons(
         registry,
         fonts,
+        canvas,
+        scrollAreaId
+    )
+end
+
+local function drawCanvas(
+    registry,
+    fonts,
+    canvas
+)
+    drawCanvasBackground(
         canvas
+    )
+
+    -- Primero dibujamos todas
+    -- las áreas scrollables.
+    for _, area, uiElement in
+        registry:each(
+            "scrollArea",
+            "uiElement"
+        )
+    do
+        if uiElement.canvasId
+            == canvas.id
+        then
+            withScrollAreaClip(
+                area,
+                function()
+                    drawCanvasElements(
+                        registry,
+                        fonts,
+                        canvas,
+                        area.id
+                    )
+                end
+            )
+        end
+    end
+
+    -- Después dibujamos elementos
+    -- fijos del Canvas.
+    drawCanvasElements(
+        registry,
+        fonts,
+        canvas,
+        nil
     )
 end
 

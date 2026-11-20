@@ -197,6 +197,52 @@ function CardInventorySystem.update(
         end
     end
 
+    local detailsOpen =
+        Canvas.isActive(
+            registry,
+            "cardDetails"
+        )
+
+    local pauseOpen =
+        Canvas.isActive(
+            registry,
+            "pauseMenu"
+        )
+
+    local input =
+        registry:resource("input")
+
+    if not detailsOpen
+        and not pauseOpen
+        and input
+    then
+        for _, eventEntity in ipairs(
+            registry:query("wheelMoved")
+        ) do
+            local event =
+                registry:get(
+                    eventEntity,
+                    "wheelMoved"
+                )
+
+            if event
+                and event.y ~= 0
+                and Canvas.isPointInsideScrollArea(
+                    registry,
+                    "inventoryCards",
+                    input.mouse.x,
+                    input.mouse.y
+                )
+            then
+                Canvas.scroll(
+                    registry,
+                    "inventoryCards",
+                    event.y
+                )
+            end
+        end
+    end
+
     for _, eventEntity in ipairs(
         registry:query("buttonPressed")
     ) do

@@ -35,7 +35,8 @@ function Canvas.createText(registry, options)
         },
 
         uiElement = {
-            canvasId = options.canvasId
+            canvasId = options.canvasId,
+            scrollAreaId = options.scrollAreaId
         },
 
         uiText = {
@@ -79,7 +80,8 @@ function Canvas.createButton(registry, options)
         },
 
         uiElement = {
-            canvasId = options.canvasId
+            canvasId = options.canvasId,
+            scrollAreaId = options.scrollAreaId
         },
 
         button = {
@@ -123,7 +125,8 @@ function Canvas.createPanel(registry, options)
         },
 
         uiElement = {
-            canvasId = options.canvasId
+            canvasId = options.canvasId,
+            scrollAreaId = options.scrollAreaId
         },
 
         panel = {}
@@ -150,11 +153,59 @@ function Canvas.createCircle(registry, options)
         },
 
         uiElement = {
-            canvasId = options.canvasId
+            canvasId = options.canvasId,
+            scrollAreaId = options.scrollAreaId
         },
 
         uiCircle = {
             id = options.id
+        }
+    })
+end
+
+function Canvas.createScrollArea(
+    registry,
+    options
+)
+    options = options or {}
+
+    local height =
+        options.height or 0
+
+    local contentHeight =
+        options.contentHeight
+        or height
+
+    return registry:spawn({
+        uiElement = {
+            canvasId =
+                options.canvasId
+        },
+
+        scrollArea = {
+            id = options.id,
+
+            x = options.x or 0,
+            y = options.y or 0,
+
+            width =
+                options.width or 0,
+
+            height = height,
+
+            contentHeight =
+                contentHeight,
+
+            offsetY = 0,
+
+            maxOffsetY =
+                math.max(
+                    0,
+                    contentHeight - height
+                ),
+
+            step =
+                options.step or 70
         }
     })
 end
@@ -255,6 +306,107 @@ function Canvas.setText(
             return
         end
     end
+end
+
+function Canvas.getScrollArea(
+    registry,
+    scrollAreaId
+)
+    for entity, area in
+        registry:each("scrollArea")
+    do
+        if area.id
+            == scrollAreaId
+        then
+            return entity, area
+        end
+    end
+
+    return nil, nil
+end
+
+function Canvas.scroll(
+    registry,
+    scrollAreaId,
+    direction
+)
+    local _, area =
+        Canvas.getScrollArea(
+            registry,
+            scrollAreaId
+        )
+
+    if not area then
+        return
+    end
+
+    local oldOffset =
+        area.offsetY
+
+    local newOffset =
+        oldOffset
+        - direction * area.step
+
+    newOffset =
+        math.max(
+            0,
+            math.min(
+                newOffset,
+                area.maxOffsetY
+            )
+        )
+
+    local delta =
+        newOffset - oldOffset
+
+    if delta == 0 then
+        return
+    end
+
+    area.offsetY =
+        newOffset
+
+    for _,
+        position,
+        uiElement
+    in
+        registry:each(
+            "position",
+            "uiElement"
+        )
+    do
+        if uiElement.scrollAreaId
+            == scrollAreaId
+        then
+            position.y =
+                position.y - delta
+        end
+    end
+end
+
+function Canvas.isPointInsideScrollArea(
+    registry,
+    scrollAreaId,
+    x,
+    y
+)
+    local _, area =
+        Canvas.getScrollArea(
+            registry,
+            scrollAreaId
+        )
+
+    if not area then
+        return false
+    end
+
+    return
+        x >= area.x
+        and x <=
+            area.x + area.width
+        and y >= area.y
+        and y <=
+            area.y + area.height
 end
 
 return Canvas

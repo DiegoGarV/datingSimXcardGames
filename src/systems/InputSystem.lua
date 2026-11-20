@@ -6,6 +6,49 @@ local InputSystem = {}
 InputSystem.name = "InputSystem"
 InputSystem.runWhenCanvasBlocked = true
 
+local function elementIsInsideScrollArea(
+    registry,
+    uiElement,
+    position,
+    rectangle
+)
+    if not uiElement.scrollAreaId then
+        return true
+    end
+
+    local _, area =
+        Canvas.getScrollArea(
+            registry,
+            uiElement.scrollAreaId
+        )
+
+    if not area then
+        return true
+    end
+
+    local left =
+        position.x
+
+    local right =
+        position.x
+        + rectangle.width
+
+    local top =
+        position.y
+
+    local bottom =
+        position.y
+        + rectangle.height
+
+    return
+        right >= area.x
+        and left <=
+            area.x + area.width
+        and bottom >= area.y
+        and top <=
+            area.y + area.height
+end
+
 local function getCanvasButtons(
     registry,
     canvasId
@@ -28,7 +71,18 @@ local function getCanvasButtons(
         local belongsToCanvas = uiElement.canvasId == canvasId
         local isActive = button.active ~= false
 
-        if belongsToCanvas and isActive then
+        local isVisible =
+            elementIsInsideScrollArea(
+                registry,
+                uiElement,
+                position,
+                rectangle
+            )
+
+        if belongsToCanvas
+            and isActive
+            and isVisible
+        then
             buttons[#buttons + 1] = {
                 entity = entity,
                 position = position,
@@ -67,14 +121,33 @@ local function findSelectedButton(buttons, selectedIndex)
     return nil
 end
 
-local function findButtonAtPosition(buttons, x, y)
+local function findButtonAtPosition(
+    registry,
+    buttons,
+    x,
+    y
+)
     for _, entry in ipairs(buttons) do
-        if HitTest.rectangle(
-            entry.position,
-            entry.rectangle,
-            x,
-            y
-        ) then
+        local insideArea = true
+
+        if entry.uiElement.scrollAreaId then
+            insideArea =
+                Canvas.isPointInsideScrollArea(
+                    registry,
+                    entry.uiElement.scrollAreaId,
+                    x,
+                    y
+                )
+        end
+
+        if insideArea
+            and HitTest.rectangle(
+                entry.position,
+                entry.rectangle,
+                x,
+                y
+            )
+        then
             return entry
         end
     end
@@ -339,6 +412,7 @@ local function processMousePressed(
     )
 
     local clicked = findButtonAtPosition(
+        registry,
         buttons,
         event.x,
         event.y
@@ -385,6 +459,7 @@ local function processMouseMoved(
     )
 
     local hovered = findButtonAtPosition(
+        registry,    
         buttons,
         event.x,
         event.y

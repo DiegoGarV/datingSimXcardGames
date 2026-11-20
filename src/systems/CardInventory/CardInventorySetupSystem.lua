@@ -17,13 +17,10 @@ local GAP_Y = 30
 
 local COLUMNS = 4
 
-
--- ESTO AÚN NO FUNCIONA
--- local VIEWPORT_X = 40
--- local VIEWPORT_Y = 120
--- local VIEWPORT_WIDTH = 720
--- local VIEWPORT_HEIGHT = 430
--- local VIEWPORT_BOTTOM = VIEWPORT_Y + VIEWPORT_HEIGHT
+local SCROLL_X = 40
+local SCROLL_Y = 120
+local SCROLL_WIDTH = 720
+local SCROLL_HEIGHT = 430
 
 local categoryColors = {
     conquest = {
@@ -93,6 +90,7 @@ local function createInventoryCard(
             registry,
             {
                 canvasId = "cardInventory",
+                scrollAreaId = "inventoryCards",
 
                 x = x,
                 y = y,
@@ -119,21 +117,9 @@ local function createInventoryCard(
         "inventoryCard",
         {
             cardId = cardId,
-            deckIndex = index,
-            -- baseY = y
+            deckIndex = index
         }
     )
-
-    -- registry:add(
-    --     entity,
-    --     "clipRect",
-    --     {
-    --         x = VIEWPORT_X,
-    --         y = VIEWPORT_Y,
-    --         width = VIEWPORT_WIDTH,
-    --         height = VIEWPORT_HEIGHT
-    --     }
-    -- )
 end
 
 local function createDetailsPanel(registry)
@@ -260,38 +246,32 @@ function CardInventorySetupSystem.setup(scene)
         return
     end
 
-    -- local cardCount =
-    --     #gameState.run.deck
+    local cardCount =
+        #gameState.run.deck
 
-    -- local rows =
-    --     math.ceil(
-    --         cardCount / COLUMNS
-    --     )
+    local rows =
+        math.ceil(
+            cardCount / COLUMNS
+        )
 
-    -- local contentBottom = VIEWPORT_Y
+    local contentHeight = 0
 
-    -- if rows > 0 then
-    --     contentBottom =
-    --         START_Y
-    --         + (rows - 1)
-    --         * (CARD_HEIGHT + GAP_Y)
-    --         + CARD_HEIGHT
-    -- end
-
-    -- local maxScroll =
-    --     math.max(
-    --         0,
-    --         contentBottom
-    --         - VIEWPORT_BOTTOM
-    --     )
+    if rows > 0 then
+        contentHeight =
+            (START_Y - SCROLL_Y)
+            + rows * CARD_HEIGHT
+            + math.max(
+                0,
+                rows - 1
+            ) * GAP_Y
+            + 20
+    end
 
     registry:setResource(
         "cardInventoryState",
         {
             selectedCardId = nil,
-            sortMode = "category",
-            scrollOffset = 0,
-            -- maxScroll = maxScroll
+            sortMode = "category"
         }
     )
 
@@ -306,6 +286,25 @@ function CardInventorySetupSystem.setup(scene)
             selectedIndex = 1,
             priority = 10,
             dim = 0
+        }
+    )
+
+    Canvas.createScrollArea(
+        registry,
+        {
+            id = "inventoryCards",
+            canvasId = "cardInventory",
+
+            x = SCROLL_X,
+            y = SCROLL_Y,
+
+            width = SCROLL_WIDTH,
+            height = SCROLL_HEIGHT,
+
+            contentHeight =
+                contentHeight,
+
+            step = 70
         }
     )
 
