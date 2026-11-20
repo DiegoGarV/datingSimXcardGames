@@ -159,6 +159,54 @@ local function playSelectedCard(registry, battle)
     startPlayerAnimation(registry)
 end
 
+local function contains(
+    list,
+    value
+)
+    for _, current in ipairs(list) do
+        if current == value then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function completeRoadmapFight(
+    gameState
+)
+    local flow =
+        gameState.run.flow
+
+    if not flow
+        or flow.source ~= "fight"
+        or not flow.fightNodeId
+    then
+        return
+    end
+
+    local roadmap =
+        gameState.run.roadmap
+
+    if not contains(
+        roadmap.completedNodes,
+        flow.fightNodeId
+    ) then
+        roadmap.completedNodes[
+            #roadmap.completedNodes + 1
+        ] =
+            flow.fightNodeId
+    end
+
+    roadmap.currentNode =
+        flow.fightNodeId
+
+    if flow.fightNodeLevel then
+        gameState.run.level =
+            flow.fightNodeLevel
+    end
+end
+
 function FightSystem.update(scene, dt)
     local registry = scene.registry
     local input = registry:resource("input")
@@ -177,6 +225,7 @@ function FightSystem.update(scene, dt)
                 registry:resource("gameState")
 
             if gameState then
+                completeRoadmapFight(gameState)
                 gameState.run.development.actionsRemaining = 2
 
                 registry:spawn({

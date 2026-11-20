@@ -25,14 +25,27 @@ function GameState.new(seed)
             },
 
             cardReward = {
-                claimedForLevel = nil
+                claimedForLevel = nil,
+                claimedKey = nil
             },
 
             roadmap = {
                 currentNode = "level1A",
                 completedNodes = {},
                 claimedRewards = {}
-            }
+            },
+
+            flow = {
+                source = nil,
+
+                fightNodeId = nil,
+                fightNodeLevel = nil,
+
+                rewardId = nil,
+
+                developmentNext = nil,
+                cardRewardNext = nil
+            },
         },
 
         settings = {

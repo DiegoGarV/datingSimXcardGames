@@ -36,11 +36,23 @@ local categoryColors = {
     }
 }
 
-local function ensureRewardState(gameState)
+local function ensureRewardState(
+    gameState
+)
     if not gameState.run.cardReward then
         gameState.run.cardReward = {
-            claimedForLevel = nil
+            claimedForLevel = nil,
+            claimedKey = nil
         }
+
+        return
+    end
+
+    if gameState.run.cardReward.claimedKey
+        == nil
+    then
+        gameState.run.cardReward.claimedKey =
+            nil
     end
 end
 
@@ -149,6 +161,29 @@ local function getTooltipText(card)
         .. tostring(card.cost)
         .. "\n\n"
         .. card.effect
+end
+
+local function getClaimKey(
+    gameState
+)
+    local flow =
+        gameState.run.flow
+
+    if flow
+        and flow.source
+            == "roadmapReward"
+        and flow.rewardId
+    then
+        return
+            "roadmap:"
+            .. flow.rewardId
+    end
+
+    return
+        "level:"
+        .. tostring(
+            gameState.run.level
+        )
 end
 
 local function createRewardCard(
@@ -304,7 +339,11 @@ function CardRewardSetupSystem.setup(scene)
         )
     end
 
-    local rewardClaimed = reward.claimedForLevel == gameState.run.level
+    local rewardClaimed =
+        reward.claimedKey
+            == getClaimKey(
+                gameState
+            )
 
     Canvas.createButton(
         registry,

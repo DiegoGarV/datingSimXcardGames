@@ -21,6 +21,29 @@ local function getConfirmButton(
     return nil
 end
 
+local function getClaimKey(
+    gameState
+)
+    local flow =
+        gameState.run.flow
+
+    if flow
+        and flow.source
+            == "roadmapReward"
+        and flow.rewardId
+    then
+        return
+            "roadmap:"
+            .. flow.rewardId
+    end
+
+    return
+        "level:"
+        .. tostring(
+            gameState.run.level
+        )
+end
+
 local function selectCard(
     registry,
     entity,
@@ -30,7 +53,14 @@ local function selectCard(
     local reward =
         gameState.run.cardReward
 
-    if reward.claimedForLevel == gameState.run.level then
+    local claimKey =
+        getClaimKey(
+            gameState
+        )
+
+    if reward.claimedKey
+        == claimKey
+    then
         return
     end
 
@@ -192,7 +222,14 @@ local function confirmReward(
     local reward =
         gameState.run.cardReward
 
-    if reward.claimedForLevel == gameState.run.level then
+    local claimKey =
+        getClaimKey(
+            gameState
+        )
+
+    if reward.claimedKey
+        == claimKey
+    then
         return
     end
 
@@ -208,7 +245,42 @@ local function confirmReward(
         #gameState.run.deck + 1
     ] = state.selectedCardId
 
-    reward.claimedForLevel = gameState.run.level
+    reward.claimedKey = claimKey
+
+    local flow =
+        gameState.run.flow
+
+    if flow
+        and flow.source
+            == "roadmapReward"
+        and flow.rewardId
+    then
+        local claimedRewards =
+            gameState.run.roadmap.claimedRewards
+
+        local alreadyClaimed =
+            false
+
+        for _, id in ipairs(
+            claimedRewards
+        ) do
+            if id == flow.rewardId then
+                alreadyClaimed = true
+                break
+            end
+        end
+
+        if not alreadyClaimed then
+            claimedRewards[
+                #claimedRewards + 1
+            ] =
+                flow.rewardId
+        end
+
+    else
+        reward.claimedForLevel =
+            gameState.run.level
+    end
 
     shrinkUnselectedCards(
         registry,
@@ -239,16 +311,32 @@ local function continueReward(
     local reward =
         gameState.run.cardReward
 
-    if reward.claimedForLevel ~= gameState.run.level then
+    local claimKey =
+        getClaimKey(
+            gameState
+        )
+
+    if reward.claimedKey
+        ~= claimKey
+    then
         return
     end
 
+    local flow =
+        gameState.run.flow
+
+    local target =
+        flow
+        and flow.cardRewardNext
+        or "cardInventory"
+
     registry:spawn({
         sceneChangeRequest = {
-            target = "cardInventory",
+            target = target,
 
             payload = {
-                gameState = gameState
+                gameState =
+                    gameState
             }
         }
     })

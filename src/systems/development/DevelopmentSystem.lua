@@ -164,13 +164,53 @@ local function processAction(
         )
 
     elseif action == "continueDevelopment" then
-        if gameState.run.development.actionsRemaining > 0 then
+        if gameState.run.development.actionsRemaining
+            > 0
+        then
             return
+        end
+
+        local flow =
+            gameState.run.flow
+
+        local target =
+            flow
+            and flow.developmentNext
+            or "cardReward"
+
+        if flow
+            and flow.source
+                == "roadmapReward"
+            and target
+                == "roadmap"
+            and flow.rewardId
+        then
+            local claimedRewards =
+                gameState.run.roadmap.claimedRewards
+
+            local alreadyClaimed =
+                false
+
+            for _, id in ipairs(
+                claimedRewards
+            ) do
+                if id == flow.rewardId then
+                    alreadyClaimed = true
+                    break
+                end
+            end
+
+            if not alreadyClaimed then
+                claimedRewards[
+                    #claimedRewards + 1
+                ] =
+                    flow.rewardId
+            end
         end
 
         registry:spawn({
             sceneChangeRequest = {
-                target = "cardReward",
+                target = target,
 
                 payload = {
                     gameState = gameState
