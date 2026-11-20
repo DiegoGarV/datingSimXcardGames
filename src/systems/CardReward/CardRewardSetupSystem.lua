@@ -304,6 +304,8 @@ function CardRewardSetupSystem.setup(scene)
         )
     end
 
+    local rewardClaimed = reward.claimedForLevel == gameState.run.level
+
     Canvas.createButton(
         registry,
         {
@@ -315,19 +317,19 @@ function CardRewardSetupSystem.setup(scene)
             width = 200,
             height = 60,
 
-            text = reward.claimed
+            text = rewardClaimed
                 and "Continue"
                 or "Select",
 
             font = "normal",
 
-            action = reward.claimed
+            action = rewardClaimed
                 and "continueReward"
                 or "confirmReward",
 
             index = 4,
 
-            active = reward.claimed
+            active = rewardClaimed
         }
     )
 end

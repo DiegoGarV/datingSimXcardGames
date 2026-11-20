@@ -30,7 +30,7 @@ local function selectCard(
     local reward =
         gameState.run.cardReward
 
-    if reward.claimed then
+    if reward.claimedForLevel == gameState.run.level then
         return
     end
 
@@ -192,7 +192,7 @@ local function confirmReward(
     local reward =
         gameState.run.cardReward
 
-    if reward.claimed then
+    if reward.claimedForLevel == gameState.run.level then
         return
     end
 
@@ -206,9 +206,9 @@ local function confirmReward(
 
     gameState.run.deck[
         #gameState.run.deck + 1
-    ] = reward.selectedCardId
+    ] = state.selectedCardId
 
-    reward.claimed = true
+    reward.claimedForLevel = gameState.run.level
 
     shrinkUnselectedCards(
         registry,
@@ -239,14 +239,9 @@ local function continueReward(
     local reward =
         gameState.run.cardReward
 
-    if not reward.claimed then
+    if reward.claimedForLevel ~= gameState.run.level then
         return
     end
-
-    -- La recompensa actual ya terminó.
-    reward.choices = nil
-    reward.selectedCardId = nil
-    reward.claimed = false
 
     -- Lo conectaremos cuando creemos
     -- CardInventoryScene.
