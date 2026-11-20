@@ -17,7 +17,7 @@ local function startNewGame(registry)
 
     registry:spawn({
         sceneChangeRequest = {
-            target = "fight",
+            target = "roadmap",
             payload = {gameState = gameState}
         }
     })
@@ -52,22 +52,34 @@ local function processButtonAction(registry, action)
         closeNewGameConfirmation(registry)
 
     elseif action == "loadGame" then
-    local gameState = SaveFile.load()
+        local gameState = SaveFile.load()
 
-    if gameState then
-        local target = gameState.run.currentScene
-            or "fight"
+        if gameState then
+            local target =
+                gameState.run.currentScene
+                or "fight"
 
-        registry:spawn({
-            sceneChangeRequest = {
-                target = target,
+            local reward =
+                gameState.run.cardReward
 
-                payload = {
-                    gameState = gameState
+            if target == "cardReward"
+                and reward
+                and reward.claimedForLevel
+                    == gameState.run.level
+            then
+                target = "roadmap"
+            end
+
+            registry:spawn({
+                sceneChangeRequest = {
+                    target = target,
+
+                    payload = {
+                        gameState = gameState
+                    }
                 }
-            }
-        })
-    end
+            })
+        end
 
     elseif action == "quit" then
         love.event.quit()

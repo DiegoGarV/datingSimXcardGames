@@ -10,7 +10,7 @@ function GameState.new(seed)
             active = false,
             seed = seed,
             level = 1,
-            currentScene = "fight",
+            currentScene = "roadmap",
             deck = {},
 
             progression = {

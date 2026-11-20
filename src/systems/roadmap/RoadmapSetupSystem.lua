@@ -79,6 +79,26 @@ function RoadmapSetupSystem.setup(
             index = 1
         }
     )
+
+    Canvas.createButton(
+        registry,
+        {
+            canvasId = "roadmap",
+
+            x = 300,
+            y = 435,
+
+            width = 200,
+            height = 55,
+
+            text = "Fight",
+            font = "button",
+
+            action = "startFight",
+
+            index = 2
+        }
+    )
 end
 
 return RoadmapSetupSystem

@@ -39,12 +39,23 @@ function RoadmapSystem.update(
             then
                 registry:spawn({
                     sceneChangeRequest = {
-                        target =
-                            "cardInventory",
+                        target = "cardInventory",
 
                         payload = {
-                            gameState =
-                                gameState
+                            gameState = gameState
+                        }
+                    }
+                })
+
+            elseif event.action
+                == "startFight"
+            then
+                registry:spawn({
+                    sceneChangeRequest = {
+                        target = "fight",
+
+                        payload = {
+                            gameState = gameState
                         }
                     }
                 })
