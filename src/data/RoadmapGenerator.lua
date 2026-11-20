@@ -305,8 +305,10 @@ local function generateReward(
             rewardType,
 
         developmentPoints =
-            rewardType == "development"
+            (
+                rewardType == "development"
                 or rewardType == "both"
+            )
             and getDevelopmentReward(
                 fightNode.level
             )
