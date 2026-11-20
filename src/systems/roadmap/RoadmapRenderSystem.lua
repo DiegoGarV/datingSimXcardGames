@@ -1,7 +1,6 @@
 local RoadmapRenderSystem = {}
 
-RoadmapRenderSystem.name =
-    "RoadmapRenderSystem"
+RoadmapRenderSystem.name = "RoadmapRenderSystem"
 
 local FOCUS_COLORS = {
     conquest = {
@@ -52,6 +51,27 @@ local function findNodePosition(
     return nil
 end
 
+local function findRoadmapNode(
+    registry,
+    nodeId
+)
+    for _,
+        roadmapNode
+    in
+        registry:each(
+            "roadmapNode"
+        )
+    do
+        if roadmapNode.id
+            == nodeId
+        then
+            return roadmapNode
+        end
+    end
+
+    return nil
+end
+
 local function drawConnections(
     registry
 )
@@ -86,6 +106,31 @@ local function drawConnections(
         if from
             and to
         then
+            local targetNode =
+                findRoadmapNode(
+                    registry,
+                    connection.toId
+                )
+
+            if targetNode
+                and targetNode.status
+                    == "blocked"
+            then
+                love.graphics.setColor(
+                    0.20,
+                    0.20,
+                    0.23,
+                    1
+                )
+            else
+                love.graphics.setColor(
+                    0.45,
+                    0.45,
+                    0.50,
+                    1
+                )
+            end
+
             love.graphics.line(
                 from.x,
                 from.y,
@@ -174,12 +219,27 @@ local function drawNodes(
                 roadmapNode
             )
 
-        love.graphics.setColor(
-            color.r,
-            color.g,
-            color.b,
-            1
-        )
+        -- 1. FILL DEL NODO
+        -- El color representa el enfoque.
+        if roadmapNode.status
+            == "blocked"
+        then
+            -- Si está bloqueado,
+            -- mantenemos su color pero mucho más oscuro.
+            love.graphics.setColor(
+                color.r * 0.25,
+                color.g * 0.25,
+                color.b * 0.25,
+                1
+            )
+        else
+            love.graphics.setColor(
+                color.r,
+                color.g,
+                color.b,
+                1
+            )
+        end
 
         love.graphics.circle(
             "fill",
@@ -188,20 +248,79 @@ local function drawNodes(
             circle.radius
         )
 
-        love.graphics.setColor(
-            1,
-            1,
-            1,
-            1
-        )
 
-        love.graphics.setLineWidth(2)
+        -- 2. COLOR DEL BORDE
+        -- El borde representa el estado.
+        if roadmapNode.status
+            == "blocked"
+        then
+            love.graphics.setColor(
+                0.45,
+                0.45,
+                0.48,
+                1
+            )
+
+        elseif roadmapNode.status
+            == "current"
+        then
+            love.graphics.setColor(
+                1,
+                0.85,
+                0.25,
+                1
+            )
+
+        elseif roadmapNode.status
+            == "available"
+        then
+            love.graphics.setColor(
+                1,
+                1,
+                1,
+                1
+            )
+
+        elseif roadmapNode.status
+            == "completed"
+        then
+            love.graphics.setColor(
+                0.35,
+                0.9,
+                0.45,
+                1
+            )
+
+        else
+            love.graphics.setColor(
+                1,
+                1,
+                1,
+                1
+            )
+        end
+
+        love.graphics.setLineWidth(
+            roadmapNode.status
+                == "current"
+                and 4
+                or 2
+        )
 
         love.graphics.circle(
             "line",
             position.x,
             position.y,
             circle.radius
+        )
+
+
+        -- 3. NÚMERO DEL NIVEL
+        love.graphics.setColor(
+            1,
+            1,
+            1,
+            1
         )
 
         love.graphics.print(
@@ -211,6 +330,87 @@ local function drawNodes(
             position.x - 4,
             position.y - 7
         )
+
+
+        -- 4. X PARA NODOS BLOQUEADOS
+        if roadmapNode.status
+            == "blocked"
+        then
+            local lockSize =
+                circle.radius * 0.45
+
+            love.graphics.setColor(
+                0.75,
+                0.75,
+                0.78,
+                1
+            )
+
+            love.graphics.setLineWidth(3)
+
+            love.graphics.line(
+                position.x - lockSize,
+                position.y - lockSize,
+                position.x + lockSize,
+                position.y + lockSize
+            )
+
+            love.graphics.line(
+                position.x + lockSize,
+                position.y - lockSize,
+                position.x - lockSize,
+                position.y + lockSize
+            )
+        end
+    end
+end
+
+local function drawRewardConnections(
+    registry
+)
+    for _,
+        rewardPosition,
+        reward
+    in
+        registry:each(
+            "position",
+            "roadmapReward"
+        )
+    do
+        local parentPosition =
+            findNodePosition(
+                registry,
+                reward.parentNode
+            )
+
+        if parentPosition then
+            if reward.status
+                == "blocked"
+            then
+                love.graphics.setColor(
+                    0.20,
+                    0.20,
+                    0.23,
+                    1
+                )
+            else
+                love.graphics.setColor(
+                    0.45,
+                    0.45,
+                    0.50,
+                    1
+                )
+            end
+
+            love.graphics.setLineWidth(3)
+
+            love.graphics.line(
+                parentPosition.x,
+                parentPosition.y,
+                rewardPosition.x,
+                rewardPosition.y
+            )
+        end
     end
 end
 
@@ -226,36 +426,53 @@ local function drawRewards(
             "roadmapReward"
         )
     do
+        local size =
+            reward.size or 22
+
+        -- 1. FILL
+        -- El color representa el tipo de premio.
+
+        local r
+        local g
+        local b
+
         if reward.rewardType
             == "card"
         then
-            love.graphics.setColor(
-                0.95,
-                0.80,
-                0.25,
-                1
-            )
+            r = 0.95
+            g = 0.80
+            b = 0.25
 
         elseif reward.rewardType
             == "development"
         then
-            love.graphics.setColor(
-                0.30,
-                0.90,
-                0.50,
-                1
-            )
+            r = 0.30
+            g = 0.90
+            b = 0.50
 
         else
+            r = 0.75
+            g = 0.40
+            b = 0.95
+        end
+
+        if reward.status
+            == "blocked"
+        then
             love.graphics.setColor(
-                0.75,
-                0.40,
-                0.95,
+                r * 0.25,
+                g * 0.25,
+                b * 0.25,
+                1
+            )
+        else
+            love.graphics.setColor(
+                r,
+                g,
+                b,
                 1
             )
         end
-
-        local size = 10
 
         love.graphics.polygon(
             "fill",
@@ -272,6 +489,100 @@ local function drawRewards(
             position.x - size,
             position.y
         )
+
+
+        -- 2. BORDE
+        -- El color representa el estado.
+
+        if reward.status
+            == "blocked"
+        then
+            love.graphics.setColor(
+                0.45,
+                0.45,
+                0.48,
+                1
+            )
+
+        elseif reward.status
+            == "available"
+        then
+            love.graphics.setColor(
+                1,
+                1,
+                1,
+                1
+            )
+
+        elseif reward.status
+            == "completed"
+        then
+            love.graphics.setColor(
+                0.35,
+                0.9,
+                0.45,
+                1
+            )
+
+        else
+            love.graphics.setColor(
+                1,
+                1,
+                1,
+                1
+            )
+        end
+
+        love.graphics.setLineWidth(3)
+
+        love.graphics.polygon(
+            "line",
+
+            position.x,
+            position.y - size,
+
+            position.x + size,
+            position.y,
+
+            position.x,
+            position.y + size,
+
+            position.x - size,
+            position.y
+        )
+
+
+        -- 3. X PARA REWARD BLOQUEADA
+
+        if reward.status
+            == "blocked"
+        then
+            local lockSize =
+                size * 0.45
+
+            love.graphics.setColor(
+                0.75,
+                0.75,
+                0.78,
+                1
+            )
+
+            love.graphics.setLineWidth(3)
+
+            love.graphics.line(
+                position.x - lockSize,
+                position.y - lockSize,
+                position.x + lockSize,
+                position.y + lockSize
+            )
+
+            love.graphics.line(
+                position.x + lockSize,
+                position.y - lockSize,
+                position.x - lockSize,
+                position.y + lockSize
+            )
+        end
     end
 end
 
@@ -347,6 +658,10 @@ function RoadmapRenderSystem.draw(
     end
 
     drawConnections(
+        registry
+    )
+
+    drawRewardConnections(
         registry
     )
 

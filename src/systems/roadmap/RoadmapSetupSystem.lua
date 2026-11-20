@@ -8,6 +8,7 @@ local PLAYER_RADIUS = 12
 local PLAYER_SPEED = 220
 
 local NODE_RADIUS = 30
+local REWARD_SIZE = 22
 
 local NODE_X_POSITIONS = {
     [1] = {
@@ -146,25 +147,17 @@ local function createRewards(
         if parentPosition then
             registry:spawn({
                 position = {
-                    x = parentPosition.x + 65,
-
+                    x = parentPosition.x + 80,
                     y = parentPosition.y
                 },
 
                 roadmapReward = {
                     id = reward.id,
-
-                    level =
-                        reward.level,
-
-                    rewardType =
-                        reward.rewardType,
-
-                    developmentPoints =
-                        reward.developmentPoints,
-
-                    parentNode =
-                        reward.parentNode
+                    level = reward.level,
+                    rewardType = reward.rewardType,
+                    developmentPoints = reward.developmentPoints,
+                    parentNode = reward.parentNode,
+                    size = REWARD_SIZE
                 }
             })
         end

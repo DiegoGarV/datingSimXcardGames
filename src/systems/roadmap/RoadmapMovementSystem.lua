@@ -95,6 +95,95 @@ local function updateCamera(
         )
 end
 
+local function collidesWithBlockedNode(
+    registry,
+    x,
+    y,
+    playerRadius
+)
+    for _,
+        nodePosition,
+        circle,
+        roadmapNode
+    in
+        registry:each(
+            "position",
+            "circle",
+            "roadmapNode"
+        )
+    do
+        if roadmapNode.blocking then
+            local dx =
+                x - nodePosition.x
+
+            local dy =
+                y - nodePosition.y
+
+            local distanceSquared =
+                dx * dx
+                + dy * dy
+
+            local minimumDistance =
+                playerRadius
+                + circle.radius
+
+            if distanceSquared
+                < minimumDistance
+                * minimumDistance
+            then
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
+local function collidesWithBlockedReward(
+    registry,
+    x,
+    y,
+    playerRadius
+)
+    for _,
+        rewardPosition,
+        reward
+    in
+        registry:each(
+            "position",
+            "roadmapReward"
+        )
+    do
+        if reward.blocking then
+            local dx =
+                x - rewardPosition.x
+
+            local dy =
+                y - rewardPosition.y
+
+            local distanceSquared =
+                dx * dx
+                + dy * dy
+
+            local rewardRadius =
+                reward.size or 22
+
+            local minimumDistance =
+                playerRadius
+                + rewardRadius
+
+            if distanceSquared
+                < minimumDistance
+                * minimumDistance
+            then
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
 function RoadmapMovementSystem.update(
     scene,
     dt
@@ -123,31 +212,63 @@ function RoadmapMovementSystem.update(
             "roadmapPlayer"
         )
     do
-        position.x =
+        local nextX =
             position.x
             + moveX
             * player.speed
             * dt
 
-        position.y =
+        nextX =
+            clamp(
+                nextX,
+                bounds.left,
+                bounds.right
+            )
+
+        if not collidesWithBlockedNode(
+            registry,
+            nextX,
+            position.y,
+            player.radius
+        )
+        and not collidesWithBlockedReward(
+            registry,
+            nextX,
+            position.y,
+            player.radius
+        )
+        then
+            position.x = nextX
+        end
+
+        local nextY =
             position.y
             + moveY
             * player.speed
             * dt
 
-        position.x =
+        nextY =
             clamp(
-                position.x,
-                bounds.left,
-                bounds.right
-            )
-
-        position.y =
-            clamp(
-                position.y,
+                nextY,
                 bounds.top,
                 bounds.bottom
             )
+
+        if not collidesWithBlockedNode(
+            registry,
+            position.x,
+            nextY,
+            player.radius
+        )
+        and not collidesWithBlockedReward(
+            registry,
+            position.x,
+            nextY,
+            player.radius
+        )
+        then
+            position.y = nextY
+        end
 
         updateCamera(
             registry,

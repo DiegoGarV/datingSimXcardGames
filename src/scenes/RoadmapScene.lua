@@ -3,6 +3,7 @@ local GameState = require("src.state.GameState")
 local RoadmapSetupSystem = require("src.systems.roadmap.RoadmapSetupSystem")
 local RoadmapSystem = require("src.systems.roadmap.RoadmapSystem")
 local InputSystem = require("src.systems.InputSystem")
+local RoadmapAccessSystem = require("src.systems.roadmap.RoadmapAccessSystem")
 local RoadmapMovementSystem = require("src.systems.roadmap.RoadmapMovementSystem")
 local RoadmapRenderSystem = require("src.systems.roadmap.RoadmapRenderSystem")
 local UISystem = require("src.systems.UISystem")
@@ -38,6 +39,10 @@ function RoadmapScene.new(payload)
 
     scene:addSystem(
         RoadmapSystem
+    )
+
+    scene:addSystem(
+        RoadmapAccessSystem
     )
 
     scene:addSystem(
