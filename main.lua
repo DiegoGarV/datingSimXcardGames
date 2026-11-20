@@ -7,6 +7,7 @@ local MainMenuScene = require("src.scenes.MainMenuScene")
 local FightScene = require("src.scenes.FightScene")
 local DevelopmentScene = require("src.scenes.DevelopmentScene")
 local CardRewardScene = require("src.scenes.CardRewardScene")
+local CardInventoryScene = require("src.scenes.CardInventoryScene")
 
 function love.load(args)
     -- SaveFile.delete()
@@ -20,6 +21,7 @@ function love.load(args)
     SceneManager.register("fight", FightScene.new)
     SceneManager.register("development", DevelopmentScene.new)
     SceneManager.register("cardReward", CardRewardScene.new)
+    SceneManager.register("cardInventory", CardInventoryScene.new)
 
     SceneManager.change("mainMenu")
 
@@ -48,6 +50,10 @@ end
 
 function love.mousemoved(x, y, dx, dy, istouch)
     SceneManager.mousemoved(x, y, dx, dy, istouch)
+end
+
+function love.wheelmoved(x, y)
+    SceneManager.wheelmoved(x, y)
 end
 
 function love.draw()

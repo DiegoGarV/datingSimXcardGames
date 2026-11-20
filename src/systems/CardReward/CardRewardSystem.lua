@@ -243,12 +243,15 @@ local function continueReward(
         return
     end
 
-    -- Lo conectaremos cuando creemos
-    -- CardInventoryScene.
-    print(
-        "Reward complete. "
-        .. "Card Inventory is next."
-    )
+    registry:spawn({
+        sceneChangeRequest = {
+            target = "cardInventory",
+
+            payload = {
+                gameState = gameState
+            }
+        }
+    })
 end
 
 function CardRewardSystem.update(

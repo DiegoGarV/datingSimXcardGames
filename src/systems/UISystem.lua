@@ -310,6 +310,40 @@ local function drawCanvasButtons(
                 button,
                 isActive
             )
+
+            if clipRect then
+                if previousX then
+                    love.graphics.setScissor(
+                        previousX,
+                        previousY,
+                        previousWidth,
+                        previousHeight
+                    )
+                else
+                    love.graphics.setScissor()
+                end
+            end
+        end
+
+        local clipRect =
+            registry:get(
+                entity,
+                "clipRect"
+            )
+
+        local previousX,
+            previousY,
+            previousWidth,
+            previousHeight =
+                love.graphics.getScissor()
+
+        if clipRect then
+            love.graphics.setScissor(
+                clipRect.x,
+                clipRect.y,
+                clipRect.width,
+                clipRect.height
+            )
         end
     end
 end

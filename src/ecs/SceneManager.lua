@@ -7,7 +7,8 @@ local frameEvents = {
     "keyPressed",
     "mousePressed",
     "mouseReleased",
-    "mouseMoved"
+    "mouseMoved",
+    "wheelMoved"
 }
 
 local function clearFrameEvents(scene)
@@ -144,6 +145,19 @@ function SceneManager.mousemoved(x, y, dx, dy, istouch)
             dx = dx,
             dy = dy,
             istouch = istouch
+        }
+    })
+end
+
+function SceneManager.wheelmoved(x, y)
+    if not currentScene then
+        return
+    end
+
+    currentScene.registry:spawn({
+        wheelMoved = {
+            x = x,
+            y = y
         }
     })
 end
