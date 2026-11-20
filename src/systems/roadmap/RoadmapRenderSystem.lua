@@ -323,12 +323,23 @@ local function drawNodes(
             1
         )
 
+        local _, resources =
+            registry:first(
+                "uiResources"
+            )
+
+        if resources then
+            love.graphics.setFont(
+                resources.fonts.small
+            )
+        end
+
         love.graphics.print(
             tostring(
                 roadmapNode.level
             ),
-            position.x - 4,
-            position.y - 7
+            position.x - 5,
+            position.y - 9
         )
 
 

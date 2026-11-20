@@ -364,6 +364,120 @@ function RoadmapSetupSystem.setup(
             viewportHeight = 600
         }
     )
+
+    Canvas.create(
+        registry,
+        {
+            id = "roadmapPrompt",
+            active = false,
+            interactive = false,
+            blocksGameplay = false,
+            priority = 20,
+            dim = 0
+        }
+    )
+
+    Canvas.createPanel(
+        registry,
+        {
+            canvasId = "roadmapPrompt",
+
+            x = 212,
+            y = 515,
+
+            width = 380,
+            height = 55,
+
+            color = {
+                r = 0.12,
+                g = 0.12,
+                b = 0.16
+            }
+        }
+    )
+
+    Canvas.createText(
+        registry,
+        {
+            id = "roadmapPromptText",
+            canvasId = "roadmapPrompt",
+
+            x = 230,
+            y = 530,
+            width = 340,
+
+            value =
+                "Press SPACE to activate",
+
+            font = "normal",
+            align = "center"
+        }
+    )
+
+    Canvas.create(
+        registry,
+        {
+            id = "roadmapInfo",
+            active = false,
+            interactive = false,
+            blocksGameplay = false,
+            priority = 20,
+            dim = 0
+        }
+    )
+
+    Canvas.createPanel(
+        registry,
+        {
+            canvasId = "roadmapInfo",
+
+            x = 25,
+            y = 90,
+
+            width = 230,
+            height = 120,
+
+            color = {
+                r = 0.12,
+                g = 0.12,
+                b = 0.16
+            }
+        }
+    )
+
+    Canvas.createText(
+        registry,
+        {
+            id = "roadmapInfoTitle",
+            canvasId = "roadmapInfo",
+
+            x = 45,
+            y = 108,
+            width = 230,
+
+            value = "",
+
+            font = "button",
+            align = "left"
+        }
+    )
+
+    Canvas.createText(
+        registry,
+        {
+            id = "roadmapInfoDescription",
+            canvasId = "roadmapInfo",
+
+            x = 45,
+            y = 145,
+            width = 230,
+
+            value = "",
+
+            font = "small",
+            align = "left"
+        }
+    )
 end
 
 return RoadmapSetupSystem
