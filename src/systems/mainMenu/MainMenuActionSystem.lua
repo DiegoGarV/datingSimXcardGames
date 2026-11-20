@@ -11,7 +11,14 @@ local NEW_GAME_CONFIRMATION_ID = "newGameConfirmation"
 local function startNewGame(registry)
     SaveFile.delete()
 
-    local gameState = GameState.new(12345)
+    local seed =
+        love.math.random(
+            1,
+            999999999
+        )
+
+    local gameState =
+        GameState.new(seed)
 
     SaveFile.save(gameState)
 
