@@ -38,19 +38,26 @@ function SceneManager.change(name, payload)
         return
     end
 
-    -- Descargar la escena anterior
     if currentScene then
         currentScene:unload()
     end
 
-    -- Crear la nueva escena
     currentSceneName = name
     currentScene = factory(payload)
 
-    -- Ejecutar su setup
     currentScene:setup()
 
-    print("Escena actual: " .. currentScene.name)
+    local gameState =
+        currentScene.registry:resource(
+            "gameState"
+        )
+
+    if gameState
+        and gameState.run
+    then
+        gameState.run.currentScene =
+            name
+    end
 end
 
 function SceneManager.update(dt)
