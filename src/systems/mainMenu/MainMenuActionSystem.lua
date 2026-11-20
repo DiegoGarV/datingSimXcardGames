@@ -64,17 +64,21 @@ local function processButtonAction(registry, action)
         if gameState then
             local target =
                 gameState.run.currentScene
-                or "fight"
+                or "roadmap"
 
-            local reward =
-                gameState.run.cardReward
-
-            if target == "cardReward"
-                and reward
-                and reward.claimedForLevel
-                    == gameState.run.level
-            then
+            if target == "cardInventory" then
                 target = "roadmap"
+
+            elseif target == "cardReward" then
+                local reward =
+                    gameState.run.cardReward
+
+                if reward
+                    and reward.claimedForLevel
+                        == gameState.run.level
+                then
+                    target = "roadmap"
+                end
             end
 
             registry:spawn({

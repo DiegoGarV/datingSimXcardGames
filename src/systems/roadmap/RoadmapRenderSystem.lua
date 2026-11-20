@@ -75,13 +75,6 @@ end
 local function drawConnections(
     registry
 )
-    love.graphics.setColor(
-        0.35,
-        0.35,
-        0.40,
-        1
-    )
-
     love.graphics.setLineWidth(4)
 
     for _,
@@ -106,27 +99,38 @@ local function drawConnections(
         if from
             and to
         then
+            local sourceNode =
+                findRoadmapNode(
+                    registry,
+                    connection.fromId
+                )
+
             local targetNode =
                 findRoadmapNode(
                     registry,
                     connection.toId
                 )
 
-            if targetNode
+            local connectionActive =
+                sourceNode
+                and targetNode
+                and sourceNode.status
+                    == "completed"
                 and targetNode.status
-                    == "blocked"
-            then
-                love.graphics.setColor(
-                    0.20,
-                    0.20,
-                    0.23,
-                    1
-                )
-            else
+                    ~= "blocked"
+
+            if connectionActive then
                 love.graphics.setColor(
                     0.45,
                     0.45,
                     0.50,
+                    1
+                )
+            else
+                love.graphics.setColor(
+                    0.20,
+                    0.20,
+                    0.23,
                     1
                 )
             end
